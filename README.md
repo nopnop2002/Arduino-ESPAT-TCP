@@ -1,4 +1,4 @@
-# MQTT_UNO   
+# MQTT_via_ESP01   
 MQTT from UNO/NANO/ProMini/STM32F103 using ESP8266's AT firmware.   
 You can Pubish / Subscribe with NO EHERNET board such as UNO.   
 
