@@ -2,8 +2,8 @@
  * MQTT Subscriber using standard AT firmware
  *  
  * ESP01 ---------- ATmega
- * TX    ---------- RX
- * RX    ---------- TX
+ * TX    ---------- RX(D4)
+ * RX    ---------- TX(D5)
  * 
  */
  
@@ -19,8 +19,8 @@
 //#define STOP_BUTTON     2 // 0: Disable STOP_BUTTON
 #define STOP_BUTTON     0 // 0: Disable STOP_BUTTON
 #define RUNNING_LED     3 // 0: Disable RUNNING_LED
-#define SERIAL_RX       10
-#define SERIAL_TX       11
+#define SERIAL_RX       4
+#define SERIAL_TX       5
 
 SoftwareSerial mySerial(SERIAL_RX, SERIAL_TX); // RX, TX
 

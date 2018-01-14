@@ -2,8 +2,8 @@
  * MQTT Publisher using standard AT firmware
  *  
  * ESP01 ---------- ATmega
- * TX    ---------- RX
- * RX    ---------- TX
+ * TX    ---------- RX(D4)
+ * RX    ---------- TX(D5)
  * 
  */
 

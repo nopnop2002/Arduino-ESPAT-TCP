@@ -77,6 +77,9 @@ _*** change baudrate to 4800bps ***_
 
 # Connect ESP-01 to UNO.
 
+ESP-01(Tx) - Arduino(D4)   
+ESP-01(Rx) - Arduino(D5)   
+
 ![esp01-mqtt-uno](https://user-images.githubusercontent.com/6020549/33831441-78b95a54-debb-11e7-9001-059a0b1a1876.jpg)
 
 You can't use on-board 3.3V.    
@@ -85,6 +88,9 @@ An electric current is insufficient.
 ----
 
 # Connect ESP-01 to STM32F101.
+
+ESP-01(Tx) - STM32F103(PA3)   
+ESP-01(Rx) - STM32F103(PA2)   
 
 ![esp01-mqtt-stm32f103](https://user-images.githubusercontent.com/6020549/33991405-d2e906de-e111-11e7-8691-d7a58492d3b8.jpg)
 
