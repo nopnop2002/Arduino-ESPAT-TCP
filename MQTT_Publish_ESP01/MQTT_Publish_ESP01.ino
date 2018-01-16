@@ -1,22 +1,43 @@
 /*
- * MQTT Subscriber using standard AT firmware
+ * MQTT Publisher using standard AT firmware
  *  
- * ESP01 ---------- STM32F103
- * TX    ---------- PA3(RX2)
- * RX    ---------- PA2(TX2)
+ * ESP8266----------ATmega
+ * TX     ----------RX(D4)
+ * RX     ----------TX(D5)
+ * 
+ * ESP8266----------STM32F103
+ * TX     ----------RX2(PA3)
+ * RX     ----------TX2(PA2)
  * 
  */
+
+#if defined(__AVR__)
+#include <SoftwareSerial.h>
+#define MQTT_TOPIC      "arduino/Japan/Aichi/Nagoya/nopnop2002/UNO" // You can change
+//#define STOP_BUTTON     2 // 0: Disable STOP_BUTTON
+#define STOP_BUTTON     0 // 0: Disable STOP_BUTTON
+#define RUNNING_LED     3 // 0: Disable RUNNING_LED
+#define SERIAL_RX       4
+#define SERIAL_TX       5
+SoftwareSerial Serial2(SERIAL_RX, SERIAL_TX); // RX, TX
+#define _MODEL_         "arduino"
+#endif
+
+#if defined(__STM32F1__)
+#define MQTT_TOPIC      "stm32f103/Japan/Aichi/Nagoya/nopnop2002/BluePill" // You can change
+//#define STOP_BUTTON     PB2 // 0: Disable STOP_BUTTON
+#define STOP_BUTTON     0 // 0: Disable STOP_BUTTON
+#define RUNNING_LED     PB1 // 0: Disable RUNNING_LED
+#define _MODEL_         "stm32f103"
+#endif
 
 #define INTERVAL        100
 #define MQTT_SERVER     "broker.hivemq.com"
 //#define MQTT_SERVER     "iot.eclipse.org"
 #define MQTT_PORT       1883
 #define MQTT_KEEP_ALIVE 60
-#define MQTT_TOPIC      "stm32f103/Japan/Aichi/Nagoya/nopnop2002/BluePill" // You can change
 #define MQTT_WILL_MSG   "I am leaving..." // You can change
-#define RUNNING_LED     PB1 // 0: Disable RUNNING_LED
-//#define STOP_BUTTON     PB2 // 0: Disable STOP_BUTTON
-#define STOP_BUTTON     0 // 0: Disable STOP_BUTTON
+
 
 unsigned long lastmillis;
 int swState = 0;
@@ -76,6 +97,25 @@ bool waitForString(char* input, int length, unsigned int timeout) {
   return false;
 }
 
+void errorDisplay(char* buff) {
+  int stat = 0;
+  Serial.print("Error:");
+  Serial.println(buff);
+  while(1) {
+    if (RUNNING_LED) {
+      digitalWrite(RUNNING_LED,stat);
+      stat = !stat;
+      delay(100);
+    }
+  }
+}
+
+void clearBuffer() {
+  while (Serial2.available())
+    Serial2.read();
+//  Serial.println();
+}
+
 void getResponse(int timeout){
   char c;
   bool flag = false;
@@ -102,31 +142,12 @@ void getResponse(int timeout){
   if (flag) Serial.println();
 }
 
-void errorDisplay(char* buff) {
-  int stat = 0;
-  Serial.print("Error:");
-  Serial.println(buff);
-  while(1) {
-    if (RUNNING_LED) {
-      digitalWrite(RUNNING_LED,stat);
-      stat = !stat;
-      delay(100);
-    }
-  }
-}
-
-void clearBuffer() {
-  while (Serial2.available())
-    Serial2.read();
-//  Serial.println("");
-}
-
 int buildConnect(byte *buf, int keep_alive, char *client_id, char *will_topic, char *will_msg) {
   int rlen = 12;
   int pos = 14;
 
   int client_id_len = strlen(client_id);
-//  Serial.println(client_id_len);
+  Serial.println(client_id_len);
   buf[pos++] = 0x00;
   buf[pos++] = client_id_len;
   for(int i=0;i<client_id_len;i++) {
@@ -135,9 +156,9 @@ int buildConnect(byte *buf, int keep_alive, char *client_id, char *will_topic, c
   rlen = rlen + 2 + client_id_len;
   
   int will_topic_len = strlen(will_topic);
-//  Serial.println(will_topic_len);
+  Serial.println(will_topic_len);
   int will_msg_len = strlen(will_msg);
-//  Serial.println(will_msg_len);
+  Serial.println(will_msg_len);
 
   if (will_topic_len > 0 && will_msg_len > 0) {
     buf[pos++] = 0x00;
@@ -187,26 +208,12 @@ int buildPublish(byte *buf, char *topic, char *msg) {
   return buf[1] + 2;   
 }
 
-int buildSubscribe(byte *buf, char *topic) {
-  int tlen = strlen(topic);
-  for(int i=0;i<tlen;i++) {
-    buf[6+i] = topic[i];
-  }
-  buf[0] = 0x82;
-  buf[1] = tlen + 5;
-  buf[2] = 0x00;
-  buf[3] = 0x01;
-  buf[4] = 0x00;
-  buf[5] = tlen;
-  buf[tlen+6] = 0x00;
-  return buf[1] + 2;   
-}
-
 
 void hexDump(byte *buf, int msize) {
   Serial.print("\nmsize=");
   Serial.println(msize);
   for(int i=0;i<msize;i++) {
+    if (buf[i] < 0x10) Serial.print("0");
     Serial.print(buf[i],HEX);
     Serial.print(" ");
   }
@@ -281,24 +288,21 @@ int getMacAddress(char *buf, int szbuf, int timeout) {
   return len;
 }
 
-
-void setup() {
+void setup(){
   char at[128];
   byte buf[128];
   int msize;
 
   Serial.begin(9600);
   Serial2.begin(4800);
+  while(!Serial2);
 
   if (RUNNING_LED) {
     pinMode(RUNNING_LED,OUTPUT);
     digitalWrite(RUNNING_LED,LOW);
   }
-  if (STOP_BUTTON) {
-    pinMode(STOP_BUTTON,INPUT);
-    attachInterrupt(STOP_BUTTON, interrupt, FALLING);
-  }
-
+  if (STOP_BUTTON) attachInterrupt(0, interrupt, FALLING);
+ 
   Serial2.print("AT+RST\r\n");
   if (!waitForString("WIFI GOT IP", 11, 10000)) {
     errorDisplay("AT+RST Fail");
@@ -417,7 +421,7 @@ void loop(){
     if (timer1 == INTERVAL) { // Publish
       Serial.println("Sending PUBLISH");
       //Publish message
-      sprintf(msg,"Publish from STM32F103 #%03d",loop);
+      sprintf(msg,"Publish from %s #%03d",_MODEL_, loop);
       Serial.println(msg);
       loop++;
       if (loop == 1000) loop = 0;
@@ -453,7 +457,7 @@ void loop(){
         errorDisplay("Server Not Response");
       }
       clearBuffer();
-      for (int i=0;i<2;i++)Serial2.write(pingreq[i]); 
+      for (int i=0;i<2;i++) Serial2.write(pingreq[i]); 
       waitForString("SEND OK", 7, 5000);
       waitForString("+IPD", 4, 5000);
 #if 0
@@ -473,3 +477,4 @@ void loop(){
   } // endif
 
 }
+
