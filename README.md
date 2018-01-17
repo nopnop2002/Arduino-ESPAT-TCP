@@ -4,22 +4,22 @@ TCP Applicaton from UNO/NANO/ProMini/STM32F103 using ESP8266's AT firmware.
 **MQTT_Publish_ESP01**   
 Simple Pubish Application.   
 It's supprt arduino & stm32f103.   
-No need any lbrary.   
+It's NOT need any library.   
 
 **MQTT_Subscribe_ESP01**   
 Simple Subscribe Application.   
 It's supprt arduino & stm32f103.   
-No need any lbrary.   
+It's NOT need any library.   
 
 **Socket_Client_ESP01**   
 Simple Socket Client Application.   
 It's supprt arduino & stm32f103.   
-No need any lbrary.   
+It's NOT need any library.   
 
 **Socket_Server_ESP01**   
 Simple Socket Server Application.   
 It's supprt arduino & stm32f103.   
-No need any lbrary.   
+It's NOT need any library.   
 
 **Socket_Client_WiFiEsp**   
 Socket Client Application using WiFiEsp.   
