@@ -4,18 +4,33 @@ TCP Applicaton from UNO/NANO/ProMini/STM32F103 using ESP8266's AT firmware.
 **MQTT_Publish_ESP01**   
 Simple Pubish Application.   
 It's supprt arduino & stm32f103.   
+No need any lbrary.   
 
 **MQTT_Subscribe_ESP01**   
 Simple Subscribe Application.   
 It's supprt arduino & stm32f103.   
+No need any lbrary.   
 
 **Socket_Client_ESP01**   
 Simple Socket Client Application.   
 It's supprt arduino & stm32f103.   
+No need any lbrary.   
 
 **Socket_Server_ESP01**   
 Simple Socket Server Application.   
 It's supprt arduino & stm32f103.   
+No need any lbrary.   
+
+**Socket_Client_WiFiEsp**   
+Socket Client Application using WiFiEsp.   
+It's supprt arduino ONLY.   
+It's need Arduino WiFi library for ESP8266 modules.   
+
+**Socket_Server_WiFiEsp**   
+Socket Server Application using WiFiEsp.   
+It's supprt arduino ONLY.   
+It's need Arduino WiFi library for ESP8266 modules.   
+
 
 ![mqtt-slide](https://user-images.githubusercontent.com/6020549/33786720-89155228-dcad-11e7-84b5-fd44cdcd7a0a.JPG)
 
@@ -112,6 +127,12 @@ ESP-01(Rx) - STM32F103(PA2)
 
 I'm using STM32 Core.    
 https://github.com/rogerclarkmelbourne/Arduino_STM32   
+
+----
+
+# Software requirement
+Arduino WiFi library for ESP8266 modules   
+https://github.com/bportaluri/WiFiEsp   
 
 ----
 
