@@ -33,6 +33,45 @@ char str_buffer[64];
 //command strings to ESP
 char cmd[64];
 
+int getIpAddress(char *buf, int szbuf, int timeout) {
+  Serial2.print("AT+CIPSTA?\r\n");
+  int len=0;
+  int pos=0;
+  char line[128];
+    
+  long int time = millis();
+
+  while( (time+timeout) > millis()) {
+    while(Serial2.available())  {
+      char c = Serial2.read(); // read the next character.
+      if (c == 0x0d) {
+          
+      } else if (c == 0x0a) {
+        if (_DEBUG_) {
+          Serial.print("Read=[");
+          Serial.print(line);
+          Serial.println("]");
+        }
+        int offset;
+        for(offset=0;offset<pos;offset++) {
+          if(line[offset] == '+') break;
+        }
+        if (strncmp(&line[offset],"+CIPSTA:ip:",11) == 0) {
+          strcpy(buf,&line[12+offset]);
+          len = strlen(buf) - 1;
+          buf[len] = 0;
+        }
+        if (strcmp(line,"OK") == 0) return len;
+        pos=0;
+        line[pos]=0;
+      } else {
+        line[pos++]=c;
+        line[pos]=0;
+      }
+    }  
+  }
+  return len;
+}
 
 //Wait for specific input string until timeout runs out
 bool waitForString(char* input, uint8_t length, unsigned int timeout) {
@@ -197,6 +236,13 @@ void setup(void)
   Serial2.begin(4800);
   delay(100);
 
+  //Enable autoconnect
+  sendCommand("AT+CWAUTOCONN=1");
+  if (!waitForString("OK", 2, 1000)) {
+    errorDisplay("AT+CWAUTOCONN Fail");
+  }
+  clearBuffer();
+
   //Restarts the Module
   sendCommand("AT+RST");
   if (!waitForString("WIFI GOT IP", 11, 10000)) {
@@ -219,12 +265,20 @@ void setup(void)
   }
   clearBuffer();
 
+#if 0
   //Get local IP address 
   sendCommand("AT+CIPSTA?");
   if (!waitForString("OK", 2, 1000)) {
     errorDisplay("AT+CIPSTA? Fail");
   }
   clearBuffer();
+#endif
+
+  //Get My IP Address
+  char IPaddress[64];
+  getIpAddress(IPaddress,sizeof(IPaddress),2000);
+  Serial.print("IP Address: ");
+  Serial.println(IPaddress);
 
   //Enable multi connections
   sendCommand("AT+CIPMUX=1");
@@ -240,7 +294,9 @@ void setup(void)
     errorDisplay("AT+CIPSERVER Fail");
   }
   clearBuffer();
-  Serial.println("Start Socket Server via ESP8266");
+
+
+  Serial.println("Start Socket Server [" + String(_MODEL_) + "] via ESP8266");
 }
 
 void loop(void) {

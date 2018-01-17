@@ -249,8 +249,12 @@ int getIpAddress(char *buf, int szbuf, int timeout) {
         Serial.print("Read=[");
         Serial.print(line);
         Serial.println("]");
-        if (strncmp(line,"+CIPSTA:ip:",11) == 0) {
-          strcpy(buf,&line[12]);
+        int offset;
+        for(offset=0;offset<pos;offset++) {
+          if(line[offset] == '+') break;
+        }
+        if (strncmp(&line[offset],"+CIPSTA:ip:",11) == 0) {
+          strcpy(buf,&line[12+offset]);
           len = strlen(buf) - 1;
           buf[len] = 0;
         }
@@ -314,6 +318,13 @@ void setup(){
     digitalWrite(RUNNING_LED,LOW);
   }
   if (STOP_BUTTON) attachInterrupt(0, interrupt, FALLING);
+
+  //Enable autoconnect
+  Serial2.print("AT+CWAUTOCONN=1\r\n");
+  if (!waitForString("OK", 2, 1000)) {
+    errorDisplay("AT+CWAUTOCONN Fail");
+  }
+  clearBuffer();
  
   Serial2.print("AT+RST\r\n");
   if (!waitForString("WIFI GOT IP", 11, 10000)) {

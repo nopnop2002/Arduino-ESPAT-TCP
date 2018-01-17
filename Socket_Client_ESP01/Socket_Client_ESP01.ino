@@ -141,6 +141,13 @@ void setup(void)
   Serial2.begin(4800);
   delay(100);
 
+  //Enable autoconnect
+  sendCommand("AT+CWAUTOCONN=1");
+  if (!waitForString("OK", 2, 1000)) {
+    errorDisplay("AT+CWAUTOCONN Fail");
+  }
+  clearBuffer();
+
   //Restarts the Module
   sendCommand("AT+RST");
   if (!waitForString("WIFI GOT IP", 11, 10000)) {
