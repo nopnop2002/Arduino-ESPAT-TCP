@@ -34,12 +34,13 @@ char str_buffer[64];
 char cmd[64];
 
 int getIpAddress(char *buf, int szbuf, int timeout) {
-  Serial2.print("AT+CIPSTA?\r\n");
   int len=0;
   int pos=0;
   char line[128];
     
   long int time = millis();
+
+  Serial2.print("AT+CIPSTA?\r\n");
 
   while( (time+timeout) > millis()) {
     while(Serial2.available())  {
@@ -265,15 +266,6 @@ void setup(void)
   }
   clearBuffer();
 
-#if 0
-  //Get local IP address 
-  sendCommand("AT+CIPSTA?");
-  if (!waitForString("OK", 2, 1000)) {
-    errorDisplay("AT+CIPSTA? Fail");
-  }
-  clearBuffer();
-#endif
-
   //Get My IP Address
   char IPaddress[64];
   getIpAddress(IPaddress,sizeof(IPaddress),2000);
@@ -295,8 +287,7 @@ void setup(void)
   }
   clearBuffer();
 
-
-  Serial.println("Start Socket Server [" + String(_MODEL_) + "] via ESP8266");
+  Serial.println("Start Socket Server [" + String(_MODEL_) + "] waiting " + String(MY_PORT) + " Port");
 }
 
 void loop(void) {

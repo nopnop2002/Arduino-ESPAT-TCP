@@ -31,7 +31,46 @@ SoftwareSerial Serial2(rxPin, txPin); // RX, TX
 char cmd[64];
 unsigned long lastmillis;
 
-//SoftwareSerial Serial2(rxPin, txPin); // RX, TX
+int getIpAddress(char *buf, int szbuf, int timeout) {
+  int len=0;
+  int pos=0;
+  char line[128];
+    
+  long int time = millis();
+
+  Serial2.print("AT+CIPSTA?\r\n");
+
+  while( (time+timeout) > millis()) {
+    while(Serial2.available())  {
+      char c = Serial2.read(); // read the next character.
+      if (c == 0x0d) {
+          
+      } else if (c == 0x0a) {
+        if (_DEBUG_) {
+          Serial.print("Read=[");
+          Serial.print(line);
+          Serial.println("]");
+        }
+        int offset;
+        for(offset=0;offset<pos;offset++) {
+          if(line[offset] == '+') break;
+        }
+        if (strncmp(&line[offset],"+CIPSTA:ip:",11) == 0) {
+          strcpy(buf,&line[12+offset]);
+          len = strlen(buf) - 1;
+          buf[len] = 0;
+        }
+        if (strcmp(line,"OK") == 0) return len;
+        pos=0;
+        line[pos]=0;
+      } else {
+        line[pos++]=c;
+        line[pos]=0;
+      }
+    }  
+  }
+  return len;
+}
 
 //Wait for specific input string until timeout runs out
 bool waitForString(char* input, int length, unsigned int timeout) {
@@ -169,8 +208,14 @@ void setup(void)
   }
   clearBuffer();
 
+  //Get My IP Address
+  char IPaddress[64];
+  getIpAddress(IPaddress,sizeof(IPaddress),2000);
+  Serial.print("IP Address: ");
+  Serial.println(IPaddress);
+
   lastmillis = millis();
-  Serial.println("Start Socket Client [" + String(_MODEL_) + "] via ESP8266");
+  Serial.println("Start Socket Client [" + String(_MODEL_) + "] to " + String(SERVER) + "/" + String(PORT) );
 }
 
 void loop(void) {
