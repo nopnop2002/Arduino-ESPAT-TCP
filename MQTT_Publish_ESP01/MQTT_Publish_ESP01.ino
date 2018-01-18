@@ -36,7 +36,8 @@ SoftwareSerial Serial2(SERIAL_RX, SERIAL_TX); // RX, TX
 //#define MQTT_SERVER     "iot.eclipse.org"
 #define MQTT_PORT       1883
 #define MQTT_KEEP_ALIVE 60
-#define MQTT_WILL_MSG   "I am leaving..." // You can change
+#define MQTT_WILL_MSG   "I am leaving..."      // You can change
+#define _DEBUG_         0                      // for Debug
 
 
 unsigned long lastmillis;
@@ -76,7 +77,7 @@ bool waitForString(char* input, int length, unsigned int timeout) {
         //Read one byte from serial port
         current_byte = Serial2.read();
 //        Serial.print(current_byte);
-        putChar(current_byte);
+        if (_DEBUG_) putChar(current_byte);
         if (current_byte != -1) {
           //Search one character at a time
           if (current_byte == input[index]) {
@@ -95,6 +96,32 @@ bool waitForString(char* input, int length, unsigned int timeout) {
   }  
   //Timed out
   return false;
+}
+
+void getResponse(int timeout){
+  char c;
+  bool flag = false;
+  char tmp[10];
+  
+  long int time = millis() + timeout;
+  while( time > millis()) {
+    if (Serial2.available()) {
+      flag = true;
+      c = Serial2.read();
+      if (c == 0x0d) {
+           
+      } else if (c == 0x0a) {
+        if (_DEBUG_) Serial.println();
+      } else if ( c < 0x20) {
+        uint8_t cc = c;
+        sprintf(tmp,"[0x%.2X]",cc);
+        if (_DEBUG_) Serial.print(tmp);
+      } else {
+        if (_DEBUG_) Serial.print(c);
+      } 
+    } // end if
+  } // end while
+  if (flag & _DEBUG_ ) Serial.println();
 }
 
 void errorDisplay(char* buff) {
@@ -116,38 +143,13 @@ void clearBuffer() {
 //  Serial.println();
 }
 
-void getResponse(int timeout){
-  char c;
-  bool flag = false;
-  char tmp[10];
-  
-  long int time = millis() + timeout;
-  while( time > millis()) {
-    if (Serial2.available()) {
-      flag = true;
-      c = Serial2.read();
-      if (c == 0x0d) {
-           
-      } else if (c == 0x0a) {
-        Serial.println();
-      } else if ( c < 0x20) {
-        uint8_t cc = c;
-        sprintf(tmp,"[0x%.2X]",cc);
-        Serial.print(tmp);
-      } else {
-        Serial.print(c);
-      } 
-    } // end if
-  } // end while
-  if (flag) Serial.println();
-}
 
 int buildConnect(byte *buf, int keep_alive, char *client_id, char *will_topic, char *will_msg) {
   int rlen = 12;
   int pos = 14;
 
   int client_id_len = strlen(client_id);
-  Serial.println(client_id_len);
+  //Serial.println(client_id_len);
   buf[pos++] = 0x00;
   buf[pos++] = client_id_len;
   for(int i=0;i<client_id_len;i++) {
@@ -156,9 +158,9 @@ int buildConnect(byte *buf, int keep_alive, char *client_id, char *will_topic, c
   rlen = rlen + 2 + client_id_len;
   
   int will_topic_len = strlen(will_topic);
-  Serial.println(will_topic_len);
+  //Serial.println(will_topic_len);
   int will_msg_len = strlen(will_msg);
-  Serial.println(will_msg_len);
+  //Serial.println(will_msg_len);
 
   if (will_topic_len > 0 && will_msg_len > 0) {
     buf[pos++] = 0x00;
@@ -221,12 +223,13 @@ void hexDump(byte *buf, int msize) {
 }
 
 int getIpAddress(char *buf, int szbuf, int timeout) {
-  Serial2.print("AT+CIPSTA?\r\n");
   int len=0;
   int pos=0;
   char line[128];
     
   long int time = millis();
+
+  Serial2.print("AT+CIPSTA?\r\n");
 
   while( (time+timeout) > millis()) {
     while(Serial2.available())  {
@@ -234,9 +237,11 @@ int getIpAddress(char *buf, int szbuf, int timeout) {
       if (c == 0x0d) {
           
       } else if (c == 0x0a) {
-        Serial.print("Read=[");
-        Serial.print(line);
-        Serial.println("]");
+        if (_DEBUG_) {
+          Serial.print("Read=[");
+          Serial.print(line);
+          Serial.println("]");
+        }
         int offset;
         for(offset=0;offset<pos;offset++) {
           if(line[offset] == '+') break;
@@ -260,12 +265,13 @@ int getIpAddress(char *buf, int szbuf, int timeout) {
 
 
 int getMacAddress(char *buf, int szbuf, int timeout) {
-  Serial2.print("AT+CIPSTAMAC?\r\n");
   int len=0;
   int pos=0;
   char line[128];
     
   long int time = millis();
+
+  Serial2.print("AT+CIPSTAMAC?\r\n");
 
   while( (time+timeout) > millis()) {
     while(Serial2.available())  {
@@ -273,9 +279,11 @@ int getMacAddress(char *buf, int szbuf, int timeout) {
       if (c == 0x0d) {
           
       } else if (c == 0x0a) {
-        Serial.print("Read=[");
-        Serial.print(line);
-        Serial.println("]");
+        if (_DEBUG_) {
+          Serial.print("Read=[");
+          Serial.print(line);
+          Serial.println("]");
+        }
         if (strncmp(line,"+CIPSTAMAC:",11) == 0) {
           strcpy(buf,&line[12]);
           len = strlen(buf) - 1;
@@ -343,16 +351,15 @@ void setup(){
   Serial.print(MACaddress);
   Serial.println("]");
 
+  Serial.print("MQTT CONNECTT.....");
   //Client requests a connection to a server
   msize =buildConnect(buf,MQTT_KEEP_ALIVE,MACaddress,MQTT_TOPIC,MQTT_WILL_MSG);
-  hexDump(buf,msize);
+  if (_DEBUG_) hexDump(buf,msize);
   sprintf(at,"AT+CIPSEND=%02d\r\n",msize);
   Serial2.print(at);
   if (!waitForString("OK", 2, 5000)) {
     errorDisplay("AT+CIPSEND Fail");
   }
-  clearBuffer();
-
   if (!waitForString(">", 1, 5000)) {
     errorDisplay("Server Not Response");
   }
@@ -361,12 +368,14 @@ void setup(){
   if (!waitForString("SEND OK", 7, 5000)) {
     errorDisplay("Server Not Receive my data");
   }
-
+  //Wait for CONNACK
   if (!waitForString("+IPD", 4, 5000)) {
-    errorDisplay("Server Not Receive my data");
+    errorDisplay("CONNACK Fail");
   }
-//  clearBuffer();
   getResponse(1000);
+  Serial.println("OK");
+
+  Serial.println("Start MQTT Publish [" + String(_MODEL_) + "] to " + String(MQTT_SERVER));
   lastmillis = millis();
 }
 
@@ -388,8 +397,6 @@ void loop(){
     if (!waitForString("OK", 2, 5000)) {
       errorDisplay("AT+CIPSEND Fail");
     }
-    clearBuffer();
-
     if (!waitForString(">", 1, 5000)) {
       errorDisplay("Server Not Response");
     }
@@ -398,7 +405,6 @@ void loop(){
     if (!waitForString("SEND OK", 7, 5000)) {
       errorDisplay("Server Not Receive my data");
     }
-
     if (!waitForString("CLOSE", 5, 5000)) {
       errorDisplay("CLOSE Fail");
     }
@@ -438,14 +444,12 @@ void loop(){
       loop++;
       if (loop == 1000) loop = 0;
       msize =buildPublish(buf,MQTT_TOPIC,msg);
-      hexDump(buf,msize);
+      if (_DEBUG_) hexDump(buf,msize);
       sprintf(at,"AT+CIPSEND=%02d\r\n",msize);
       Serial2.print(at);
       if (!waitForString("OK", 2, 5000)) {
         errorDisplay("AT+CIPSEND Fail");
       }
-//      clearBuffer();
-  
       if (!waitForString(">", 1, 5000)) {
         errorDisplay("Server Not Response");
       }
@@ -454,6 +458,13 @@ void loop(){
       if (!waitForString("SEND OK", 7, 5000)) {
         errorDisplay("Server Not Receive my data");
       }
+      //Wait for PUBACK
+      waitForString("+IPD", 4, 1000);
+#if 0
+      if (!waitForString("+IPD", 4, 5000)) {
+        errorDisplay("PUBACK Fail");
+      }
+#endif
       getResponse(1000);
       timer1 = 0;
     }
@@ -463,21 +474,19 @@ void loop(){
       if (!waitForString("OK", 2, 5000)) {
         errorDisplay("AT+CIPSEND Fail");
       }
-//      clearBuffer();
-  
       if (!waitForString(">", 1, 5000)) {
         errorDisplay("Server Not Response");
       }
       clearBuffer();
       for (int i=0;i<2;i++) Serial2.write(pingreq[i]); 
-      waitForString("SEND OK", 7, 5000);
-      waitForString("+IPD", 4, 5000);
-#if 0
       if (!waitForString("SEND OK", 7, 5000)) {
         errorDisplay("Server Not Receive my data");
       }
+      //Wait for PINGRESP
+      waitForString("+IPD", 4, 1000);
+#if 0
       if (!waitForString("+IPD", 4, 5000)) {
-        errorDisplay("Server Not Receive my data");
+        errorDisplay("PINGRESP Fail");
       }
 #endif
       getResponse(1000);

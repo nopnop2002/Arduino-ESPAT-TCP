@@ -19,8 +19,8 @@
 #define RUNNING_LED     3 // 0: Disable RUNNING_LED
 #define SERIAL_RX       4
 #define SERIAL_TX       5
-
 SoftwareSerial Serial2(SERIAL_RX, SERIAL_TX); // RX, TX
+#define _MODEL_         "arduino"
 #endif
 
 #if defined(__STM32F1__)
@@ -28,6 +28,7 @@ SoftwareSerial Serial2(SERIAL_RX, SERIAL_TX); // RX, TX
 //#define STOP_BUTTON     PB2 // 0: Disable STOP_BUTTON
 #define STOP_BUTTON     0 // 0: Disable STOP_BUTTON
 #define RUNNING_LED     PB1 // 0: Disable RUNNING_LED
+#define _MODEL_         "stm32f103"
 #endif
 
 #define MQTT_SERVER     "broker.hivemq.com"
@@ -36,6 +37,7 @@ SoftwareSerial Serial2(SERIAL_RX, SERIAL_TX); // RX, TX
 #define MQTT_KEEP_ALIVE 60
 #define MAX_TOPIC       64
 #define MAX_MESSAGE     64
+#define _DEBUG_         0                      // for Debug
 
 unsigned long lastmillis;
 int swState = 0;
@@ -74,7 +76,7 @@ bool waitForString(char* input, int length, unsigned int timeout) {
         //Read one byte from serial port
         current_byte = Serial2.read();
 //        Serial.print(current_byte);
-        putChar(current_byte);
+        if (_DEBUG_) putChar(current_byte);
         if (current_byte != -1) {
           //Search one character at a time
           if (current_byte == input[index]) {
@@ -108,17 +110,17 @@ void getResponse(int timeout){
       if (c == 0x0d) {
            
       } else if (c == 0x0a) {
-        Serial.println();
+        if (_DEBUG_) Serial.println();
       } else if ( c < 0x20) {
         uint8_t cc = c;
         sprintf(tmp,"[0x%.2X]",cc);
-        Serial.print(tmp);
+        if (_DEBUG_) Serial.print(tmp);
       } else {
-        Serial.print(c);
+        if (_DEBUG_) Serial.print(c);
       } 
     } // end if
   } // end while
-  if (flag) Serial.println();
+  if (flag & _DEBUG_ ) Serial.println();
 }
 
 void errorDisplay(char* buff) {
@@ -226,6 +228,7 @@ void hexDump(byte *buf, int msize) {
   Serial.print("\nmsize=");
   Serial.println(msize);
   for(int i=0;i<msize;i++) {
+    if (buf[i] < 0x10) Serial.print("0");
     Serial.print(buf[i],HEX);
     Serial.print(" ");
   }
@@ -233,12 +236,13 @@ void hexDump(byte *buf, int msize) {
 }
 
 int getIpAddress(char *buf, int szbuf, int timeout) {
-  Serial2.print("AT+CIPSTA?\r\n");
   int len=0;
   int pos=0;
   char line[128];
     
   long int time = millis();
+
+  Serial2.print("AT+CIPSTA?\r\n");
 
   while( (time+timeout) > millis()) {
     while(Serial2.available())  {
@@ -246,9 +250,11 @@ int getIpAddress(char *buf, int szbuf, int timeout) {
       if (c == 0x0d) {
           
       } else if (c == 0x0a) {
-        Serial.print("Read=[");
-        Serial.print(line);
-        Serial.println("]");
+        if (_DEBUG_) {
+          Serial.print("Read=[");
+          Serial.print(line);
+          Serial.println("]");
+        }
         int offset;
         for(offset=0;offset<pos;offset++) {
           if(line[offset] == '+') break;
@@ -271,12 +277,13 @@ int getIpAddress(char *buf, int szbuf, int timeout) {
 }
 
 int getMacAddress(char *buf, int szbuf, int timeout) {
-  Serial2.print("AT+CIPSTAMAC?\r\n");
   int len=0;
   int pos=0;
   char line[128];
     
   long int time = millis();
+
+  Serial2.print("AT+CIPSTAMAC?\r\n");
 
   while( (time+timeout) > millis()) {
     while(Serial2.available())  {
@@ -284,9 +291,11 @@ int getMacAddress(char *buf, int szbuf, int timeout) {
       if (c == 0x0d) {
           
       } else if (c == 0x0a) {
-        Serial.print("Read=[");
-        Serial.print(line);
-        Serial.println("]");
+        if (_DEBUG_) {
+          Serial.print("Read=[");
+          Serial.print(line);
+          Serial.println("]");
+        }
         if (strncmp(line,"+CIPSTAMAC:",11) == 0) {
           strcpy(buf,&line[12]);
           len = strlen(buf) - 1;
@@ -355,15 +364,14 @@ void setup(){
   Serial.println("]");
 
   //Client requests a connection to a server
+  Serial.print("MQTT CONNECTT.....");
   msize =buildConnect(buf,MQTT_KEEP_ALIVE,MACaddress,"","");
-  hexDump(buf,msize);
+  if (_DEBUG_) hexDump(buf,msize);
   sprintf(at,"AT+CIPSEND=%02d\r\n",msize);
   Serial2.print(at);
   if (!waitForString("OK", 2, 5000)) {
     errorDisplay("AT+CIPSEND Fail");
   }
-  clearBuffer();
-
   if (!waitForString(">", 1, 5000)) {
     errorDisplay("Server Not Response");
   }
@@ -372,29 +380,39 @@ void setup(){
   if (!waitForString("SEND OK", 7, 5000)) {
     errorDisplay("Server Not Receive my data");
   }
-  clearBuffer();
-  
-  msize =buildSubscribe(buf,SUB_TOPIC);
-  hexDump(buf,msize);
-  sprintf(at,"AT+CIPSEND=%02d\r\n",msize);
-  Serial2.print(at);
-  if (!waitForString("OK", 2, 5000)) {
-    errorDisplay("AT+CIPSEND Fail");
+  //Wait for CONNACK
+  if (!waitForString("+IPD", 4, 5000)) {
+    errorDisplay("CONNACK Fail");
   }
-  clearBuffer();
-
-  if (!waitForString(">", 1, 5000)) {
-    errorDisplay("Server Not Response");
-  }
-  clearBuffer();
-  for (int i=0;i<msize;i++)Serial2.write(buf[i]);
-  if (!waitForString("SEND OK", 7, 5000)) {
-    errorDisplay("Server Not Receive my data");
-  }
-//  clearBuffer();
   getResponse(1000);
-  lastmillis = millis();
+  Serial.println("OK");
 
+  //Client requests a subscribe to a server
+  Serial.print("MQTT SUBSCRIBE.....");
+  msize =buildSubscribe(buf,SUB_TOPIC);
+  if (_DEBUG_) hexDump(buf,msize);
+  sprintf(at,"AT+CIPSEND=%02d\r\n",msize);
+  Serial2.print(at);
+  if (!waitForString("OK", 2, 5000)) {
+    errorDisplay("AT+CIPSEND Fail");
+  }
+  if (!waitForString(">", 1, 5000)) {
+    errorDisplay("Server Not Response");
+  }
+  clearBuffer();
+  for (int i=0;i<msize;i++)Serial2.write(buf[i]);
+  if (!waitForString("SEND OK", 7, 5000)) {
+    errorDisplay("Server Not Receive my data");
+  }
+  //Wait for SUBACK
+  if (!waitForString("+IPD", 4, 5000)) {
+    errorDisplay("SUBACK Fail");
+  }
+  getResponse(1000);
+  Serial.println("OK");
+
+  Serial.println("Start MQTT Subscribe [" + String(_MODEL_) + "] from " + String(MQTT_SERVER));
+  lastmillis = millis();
 }
 
 void loop(){
@@ -460,7 +478,7 @@ void loop(){
  */
   while (Serial2.available()) {
     c = Serial2.read();
-    putChar(c);
+    if (_DEBUG_) putChar(c);
     if (c == 0x0d) {
 //      Serial.println("LF");
     } else if (c == 0x0a) {
@@ -581,20 +599,18 @@ void loop(){
       }
       clearBuffer();
       for (int i=0;i<2;i++)Serial2.write(pingreq[i]); 
-      waitForString("SEND OK", 7, 5000);
-//      waitForString("+IPD", 4, 5000);
-#if 0
       if (!waitForString("SEND OK", 7, 5000)) {
         errorDisplay("Server Not Receive my data");
       }
+      //Wait for PINGRESP
+      waitForString("+IPD", 4, 1000);
+#if 0
       if (!waitForString("+IPD", 4, 5000)) {
         errorDisplay("Server Not Receive my data");
       }
       getResponse(1000);
 #endif
       timer = 0;
-//    } else {
-//      getResponse(10);
     }
   }
 
