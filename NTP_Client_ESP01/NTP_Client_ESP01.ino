@@ -334,7 +334,7 @@ void sendNTPpacket(char *ntpSrv, int ntpPort)
   //Send Packet
   Serial2.write((uint8_t *)packetBuffer,NTP_PACKET_SIZE);
   if (!waitForString("SEND OK", 7, 1000)) {
-     errorDisplay("AT+CIPSEND Fail");
+     errorDisplay("SEND Fail");
   }
 }
 
