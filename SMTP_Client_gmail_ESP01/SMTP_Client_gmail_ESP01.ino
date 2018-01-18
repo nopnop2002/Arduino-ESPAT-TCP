@@ -25,8 +25,8 @@ SoftwareSerial Serial2(rxPin, txPin); // RX, TX
 
 #define SMTP_SERVER "smtp.gmail.com"
 #define SMTP_PORT   465
-#define BASE64_USER "Encorded Your Username of gmail" // Username of gmail
-#define BASE64_PASS "Encorded Your Password of gmail" // Password of gmail
+#define BASE64_USER "Base64 Encorded Your Username of gmail" // Username of gmail
+#define BASE64_PASS "Base64 Encorded Your Password of gmail" // Password of gmail
 #define MAIL_FROM   "abcd@gmail.com"                  // Your gmail account
 #define MAIL_TO     "abcd@provider.com"               // Mail To
 #define JAPANESE    1                                 // Send Japanese
