@@ -3,44 +3,52 @@ TCP/UDP Applicaton from UNO/NANO/ProMini/STM32F103 using ESP8266's AT firmware.
 
 **MQTT_Publish_ESP01**   
 Simple Pubish Application.   
-It's supprt arduino & stm32f103.   
-It's NOT need any library.   
+Supprted arduino & stm32f103.   
+It DON'T require any library.   
 
 **MQTT_Subscribe_ESP01**   
 Simple Subscribe Application.   
-It's supprt arduino & stm32f103.   
-It's NOT need any library.   
+Supprted arduino & stm32f103.   
+It DON'T require any library.   
 
 ![slide1](https://user-images.githubusercontent.com/6020549/35101108-a13451d8-fca1-11e7-8cfd-37d71f18f880.JPG)
 
 **Socket_Client_ESP01**   
 Simple Socket Client Application.   
-It's supprt arduino & stm32f103.   
-It's NOT need any library.   
+Supprted arduino & stm32f103.   
+It DON'T require any library.   
 
 **Socket_Server_ESP01**   
 Simple Socket Server Application.   
-It's supprt arduino & stm32f103.   
-It's NOT need any library.   
+Supprted arduino & stm32f103.   
+It DON'T require any library.   
 
 **Socket_Client_WiFiEsp**   
-Socket Client Application using WiFiEsp.   
-It's supprt arduino ONLY.   
-It's need Arduino WiFi library for ESP8266 modules.   
+Simple Socket Client Application using WiFiEsp.   
+Supprted arduino ONLY.   
+It require Arduino WiFi library for ESP8266 modules.   
 
 **Socket_Server_WiFiEsp**   
-Socket Server Application using WiFiEsp.   
-It's supprt arduino ONLY.   
-It's need Arduino WiFi library for ESP8266 modules.   
+Simple Socket Server Application using WiFiEsp.   
+Supprted arduino ONLY.   
+It require Arduino WiFi library for ESP8266 modules.   
 
 ![slide2](https://user-images.githubusercontent.com/6020549/35101341-9019e394-fca2-11e7-9edd-0aa9086fd5db.JPG)
 
 **NTP_Client_ESP01**   
 Simple NTP Client Application.   
-It's supprt arduino & stm32f103.   
-It's NOT need any library.   
+Supprted arduino & stm32f103.   
+It DON'T require any library.   
 
 ![slide3](https://user-images.githubusercontent.com/6020549/35101499-241b1950-fca3-11e7-9876-0a22008ebc5a.JPG)
+
+**SMTP_Client_gmail_ESP01**   
+Simple SMTP Client Application.   
+Supprted arduino & stm32f103.   
+It DON'T require any library.   
+You need gmail account.   
+
+![slide4](https://user-images.githubusercontent.com/6020549/35125598-90e2a360-fced-11e7-89ed-045cd6c49984.JPG)
 
 
 # Flash AT firmware to ESP-01.   
@@ -141,6 +149,8 @@ https://github.com/rogerclarkmelbourne/Arduino_STM32
 # Software requirement
 Arduino WiFi library for ESP8266 modules   
 https://github.com/bportaluri/WiFiEsp   
+
+If you use SMTP, you need gmail account.   
 
 ----
 
