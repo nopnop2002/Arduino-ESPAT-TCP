@@ -328,6 +328,9 @@ void sendNTPpacket(char *ntpSrv, int ntpPort)
   sendCommand(cmd);
   if (!waitForString(">", 1, 1000)) {
     errorDisplay("AT+CIPSEND Fail");
+//      Serial.println("AT+CIPSEND Fail");
+//      delay(1000);
+//      continue;
   }
   clearBuffer();
   

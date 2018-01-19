@@ -1,5 +1,5 @@
 # MQTT_via_ESP01   
-TCP/UDP Applicaton from UNO/NANO/ProMini/STM32F103 using ESP8266's AT firmware.   
+TCP/UDP Applicaton for Arduino & STM32F103 using ESP8266's AT firmware.   
 
 **MQTT_Publish_ESP01**   
 Simple Pubish Application.   
