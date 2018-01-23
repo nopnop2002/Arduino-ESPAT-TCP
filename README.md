@@ -160,3 +160,31 @@ Enjoy!!
 
 ![esp01-mqtt-uno-tft](https://user-images.githubusercontent.com/6020549/33193265-cbbd2618-d10a-11e7-9dba-dd60643c27bb.JPG)
 
+----
+
+# AT Firmware Upate
+
+1.Make sure TE(terminal equipment) is in sta or sta+ap mode   
+    
+    AT+CWMODE=3
+    OK
+    
+2.Make sure TE got ip address   
+    
+    AT+CWJAP="ssid","12345678"
+    OK
+    
+    AT+CIFSR
+    192.168.1.134
+    
+3.Let's update   
+    
+    AT+CIUPDATE
+    +CIPUPDATE:1    found server
+    +CIPUPDATE:2    connect server
+    +CIPUPDATE:3    got edition
+    +CIPUPDATE:4    start start
+    
+    OK
+
+
