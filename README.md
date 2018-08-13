@@ -63,17 +63,17 @@ I'm using esp8266_flasher.exe and v2.0 AT Firmware(ESP).bin.
 
 ![esp01-setup](https://user-images.githubusercontent.com/6020549/33159150-bdade984-d053-11e7-9b93-bbbf05573441.jpg)
 
-    AT+GMR
+    _AT+GMR_
     AT version:0.40.0.0(Aug  8 2015 14:45:58)
     SDK version:1.3.0
     Ai-Thinker Technology Co.,Ltd.
     Build:1.3.0.2 Sep 11 2015 11:48:04
     OK
     
-    AT+CWMODE=1
+    _AT+CWMODE=1_
     
     OK
-    AT+CWLAP
+    _AT+CWLAP_
     +CWLAP:(3,"Picking",-86,"34:12:98:08:4b:4a",1,-4)
     +CWLAP:(4,"ctc-g-fa4a2e",-92,"c0:25:a2:b1:8c:2e",2,3)
     +CWLAP:(4,"aterm-e625c0-g",-49,"c0:25:a2:ac:cb:ba",3,15)
