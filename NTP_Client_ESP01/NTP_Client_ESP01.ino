@@ -17,11 +17,13 @@
 #define rxPin    4    // D4
 #define txPin    5    // D5
 SoftwareSerial Serial2(rxPin, txPin); // RX, TX
+#define BaudRate 9600
 #define _MODEL_  "arduino"
 #endif
 
 #if defined(__STM32F1__)
 #include <TimeLib.h>     // https://github.com/PaulStoffregen/Time
+#define BaudRate 115200
 #define _MODEL_  "stm32f103"
 #endif
 
@@ -162,38 +164,33 @@ char * dow_char_JP(byte days) {
 }
 
 // dow() Return day of the week number[0-Sunday, 1-Monday etc.]
-byte dow(int y, int m, int d) {
-  static int t[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
-//  y -= m < 3;
-  if (m < 3) y--;
-  return (y + y/4 - y/100 + y/400 + t[m-1] + d) % 7;
+uint8_t dow(unsigned long t) {
+  return ((t / 86400) + 4) % 7;
 }
 
 void showTime(char * title, time_t timet, char * dow) {
-   Serial.print(title);
-   Serial.print(year(timet));
-   Serial.print("/");
-   Serial.print(month(timet));
-   Serial.print("/");
-   Serial.print(day(timet));
-   Serial.print(" ");
-   Serial.print(hour(timet));
-   Serial.print(":");
-   Serial.print(minute(timet));
-   Serial.print(":");
-   Serial.print(second(timet));
-   Serial.print(" [");
-   Serial.print(dow);
-   Serial.println("]");
+  Serial.println("[showTime] timet=" + String(timet));
+  Serial.print(title);
+  Serial.print(year(timet));
+  Serial.print("/");
+  Serial.print(month(timet));
+  Serial.print("/");
+  Serial.print(day(timet));
+  Serial.print(" ");
+  Serial.print(hour(timet));
+  Serial.print(":");
+  Serial.print(minute(timet));
+  Serial.print(":");
+  Serial.print(second(timet));
+  Serial.print(" [");
+  Serial.print(dow);
+  Serial.println("]");
 }
 
 void setup(void)
 {
-  Serial.begin(9600);
-
-  //Make sure ESP8266 is set to 4800
-  Serial2.begin(4800);
-  delay(100);
+  delay(1000);Serial.begin(9600);
+  Serial2.begin(BaudRate);
 
   //Enable autoconnect
   sendCommand("AT+CWAUTOCONN=1");
@@ -295,11 +292,11 @@ void loop(void) {
     Serial.print("Unix time = ");
     Serial.println(epoch);
 
-    // Get day of the week
-    byte DayOfWeek=dow(year(),month(),day());
     // Greenwich Mean Time(GMT)
+    uint8_t DayOfWeek = dow(epoch); 
     showTime("The UTC time is ", epoch, dow_char_EN(DayOfWeek));
     // Local time(Japan)
+    DayOfWeek = dow(epoch + (9 * 60 * 60));
     showTime("Local time is ", epoch + (TIME_ZONE * 60 * 60), dow_char_JP(DayOfWeek));
   }
 }
