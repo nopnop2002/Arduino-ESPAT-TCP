@@ -17,13 +17,13 @@
 #define rxPin    4    // D4
 #define txPin    5    // D5
 SoftwareSerial Serial2(rxPin, txPin); // RX, TX
-#define BaudRate 9600
+#define BaudRate 4800
 #define _MODEL_  "arduino"
 #endif
 
 #if defined(__STM32F1__)
 #include <TimeLib.h>     // https://github.com/PaulStoffregen/Time
-#define BaudRate 115200
+#define BaudRate 4800
 #define _MODEL_  "stm32f103"
 #endif
 
