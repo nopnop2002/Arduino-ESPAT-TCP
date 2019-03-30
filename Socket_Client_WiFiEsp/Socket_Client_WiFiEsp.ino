@@ -1,24 +1,37 @@
 /*
- * Simple Socket Client with WiFiEsp
+ * Simple TCP/IP Client using WiFiEsp
  * 
  * Software requirement
  * Arduino WiFi library for ESP8266 modules
  * https://github.com/bportaluri/WiFiEsp
  * 
- * ESP8266----------ATmega
+ * for ATmega328
+ * ESP8266----------ATmega328
  * TX     ----------RX(D4)
  * RX     ----------TX(D5)
  * 
- * ESP8266----------STM32F103
- * Not Supported
+ * for ATmega2560
+ * ESP8266----------ATmega2560
+ * TX     ----------RX(D19)
+ * RX     ----------TX(D18)
  *
 */
 
 #include "WiFiEsp.h"  // https://github.com/bportaluri/WiFiEsp
 
+//for Arduino UNO(ATmega328)
+#if defined(__AVR_ATmega328__)  || defined(__AVR_ATmega328P__)
 #include "SoftwareSerial.h"
 SoftwareSerial Serial1(4, 5); // RX, TX
-#define _MODEL_        "WiFiEsp"
+#define _MODEL_         "ATmega328"
+#define _BAUDRATE_      4800
+
+//for Arduino MEGA(ATmega2560)
+#elif defined(__AVR_ATmega2560__)
+#define _MODEL_         "ATmega2560"
+#define _BAUDRATE_      115200
+#endif
+
 #define INTERVAL       5000
 #define SOCKET_HOST    "192.168.10.190" // You have to change
 #define SOCKET_PORT    9876             // You have to change
@@ -28,7 +41,7 @@ WiFiEspClient client;
 
 char ssid[] = "aterm-e625c0-g";       // your network SSID (name)
 char pass[] = "05ecd1dcd39c6";        // your network password
-int status = WL_IDLE_STATUS;     // the Wifi radio's status
+int status = WL_IDLE_STATUS;          // the Wifi radio's status
 
 unsigned long nextMillis;
 
@@ -41,9 +54,9 @@ void errorDisplay(char* buff) {
 
 void setup() {
   // initialize serial for debugging
-  Serial.begin(9600);
+  Serial.begin(115200);
   // initialize serial for ESP module
-  Serial1.begin(4800);
+  Serial1.begin(_BAUDRATE_);
   // initialize ESP module
   WiFi.init(&Serial1);
 
