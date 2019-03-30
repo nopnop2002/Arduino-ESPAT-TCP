@@ -115,20 +115,7 @@ _*** Because there is no the 2nd UART in UNO ***_
 _*** So UNO use Software Serial with low speed ***_
 
     AT+UART_DEF=4800,8,1,0,0
-    
-    OK
-    at
-    
-    OK
-    AT+RST
 
-    OK
-    
-    Ai-Thinker Technology Co.,Ltd.
-    
-    invalid
-    WIFI CONNECTED
-    WIFI GOT IP
 
 ----
 
