@@ -1,150 +1,84 @@
 /*
- * MQTT Publisher using standard AT firmware
+ * MQTT Publisher using ESP8266 AT Instruction Set
  *  
- * ESP8266----------ATmega
+ * for ATmega328
+ * ESP8266----------ATmega328
  * TX     ----------RX(D4)
  * RX     ----------TX(D5)
  * 
+ * for ATmega2560
+ * ESP8266----------ATmega2560
+ * TX     ----------RX(D19)
+ * RX     ----------TX(D18)
+ * 
+ * for STM32F103 MAPLE Core
  * ESP8266----------STM32F103
- * TX     ----------RX2(PA3)
- * RX     ----------TX2(PA2)
+ * TX     ----------RX(PA3)
+ * RX     ----------TX(PA2)
+ * 
+ * for STM32F103 ST Core
+ * ESP8266----------STM32F103
+ * TX     ----------RX(PA10)
+ * RX     ----------TX(PA9)
  * 
  */
 
-#if defined(__AVR__)
+#include "espLib.h"
+
+//for Arduino UNO(ATmega328)
+#if defined(__AVR_ATmega328__)  || defined(__AVR_ATmega328P__)
 #include <SoftwareSerial.h>
-#define MQTT_TOPIC      "arduino/Japan/Aichi/Nagoya/nopnop2002/UNO" // You can change
-//#define STOP_BUTTON     2 // 0: Disable STOP_BUTTON
-#define STOP_BUTTON     0 // 0: Disable STOP_BUTTON
-#define RUNNING_LED     3 // 0: Disable RUNNING_LED
 #define SERIAL_RX       4
 #define SERIAL_TX       5
 SoftwareSerial Serial2(SERIAL_RX, SERIAL_TX); // RX, TX
-#define _MODEL_         "arduino"
+#define STOP_BUTTON     2 // 0: Disable STOP_BUTTON
+#define RUNNING_LED     3 // 0: Disable RUNNING_LED
+#define _BAUDRATE_      4800
+#define _SERIAL_        Serial2
+#define _MODEL_         "ATmega328"
+
+//for Arduino MEGA(ATmega2560)
+#elif defined(__AVR_ATmega2560__)
+#define STOP_BUTTON     2 // 0: Disable STOP_BUTTON
+#define RUNNING_LED     3 // 0: Disable RUNNING_LED
+#define _BAUDRATE_      115200
+#define _SERIAL_        Serial1
+#define _MODEL_         "ATmega2560"
+
+//for STM32F103(MAPLE Core)
+#elif defined(__STM32F1__)
+#define STOP_BUTTON     PB2 // 0: Disable STOP_BUTTON
+#define RUNNING_LED     PB1 // 0: Disable RUNNING_LED
+#define _BAUDRATE_      115200
+#define _SERIAL_        Serial2
+#define _MODEL_         "STM32F103 MAPLE Core"
+
+//for STM32F103(ST Core)
+#else
+HardwareSerial Serial1(PA10, PA9);
+#define STOP_BUTTON     PB2 // 0: Disable STOP_BUTTON
+#define RUNNING_LED     PB1 // 0: Disable RUNNING_LED
+#define _BAUDRATE_      115200
+#define _SERIAL_        Serial1
+#define _MODEL_         "STM32F103 ST Core"
 #endif
 
-#if defined(__STM32F1__)
-#define MQTT_TOPIC      "stm32f103/Japan/Aichi/Nagoya/nopnop2002/BluePill" // You can change
-//#define STOP_BUTTON     PB2 // 0: Disable STOP_BUTTON
-#define STOP_BUTTON     0 // 0: Disable STOP_BUTTON
-#define RUNNING_LED     PB1 // 0: Disable RUNNING_LED
-#define _MODEL_         "stm32f103"
-#endif
 
 #define INTERVAL        100
-#define MQTT_SERVER     "broker.hivemq.com"
+#define MQTT_SERVER     "192.168.10.40"
+//#define MQTT_SERVER     "broker.hivemq.com"
 //#define MQTT_SERVER     "iot.eclipse.org"
 #define MQTT_PORT       1883
+#define MQTT_TOPIC      "ESP-AT-MQTT/"          // You can change
 #define MQTT_KEEP_ALIVE 60
-#define MQTT_WILL_MSG   "I am leaving..."      // You can change
-#define _DEBUG_         0                      // for Debug
+#define MQTT_WILL_TOPIC "ESP-AT-MQTT/"          // You can change
+#define MQTT_WILL_MSG   "I am leaving..."       // You can change
+#define _DEBUG_         0                       // for Debug
 
+// Last Packet Send Time (MilliSecond)
+unsigned long lastSendPacketTime = 0;
 
-unsigned long lastmillis;
-int swState = 0;
-
-void interrupt()
-{
-  Serial.println("interrupt");
-  swState = 1;
-}
-
-void putChar(char c) {
-  char tmp[10];
-  if ( c == 0x0a) {
-    Serial.println();
-  } else if (c == 0x0d) {
-    
-  } else if ( c < 0x20) {
-    uint8_t cc = c;
-    sprintf(tmp,"[0x%.2X]",cc);
-    Serial.print(tmp);
-  } else {
-    Serial.print(c);
-  }
-}
-
-//Wait for specific input string until timeout runs out
-bool waitForString(char* input, int length, unsigned int timeout) {
-  unsigned long end_time = millis() + timeout;
-  char current_byte = 0;
-  int index = 0;
-
-   while (end_time >= millis()) {
-    
-      if(Serial2.available()) {
-        
-        //Read one byte from serial port
-        current_byte = Serial2.read();
-//        Serial.print(current_byte);
-        if (_DEBUG_) putChar(current_byte);
-        if (current_byte != -1) {
-          //Search one character at a time
-          if (current_byte == input[index]) {
-            index++;
-            
-            //Found the string
-            if (index == length) {              
-              return true;
-            }
-          //Restart position of character to look for
-          } else {
-            index = 0;
-          }
-        }
-      }
-  }  
-  //Timed out
-  return false;
-}
-
-void getResponse(int timeout){
-  char c;
-  bool flag = false;
-  char tmp[10];
-  
-  long int time = millis() + timeout;
-  while( time > millis()) {
-    if (Serial2.available()) {
-      flag = true;
-      c = Serial2.read();
-      if (c == 0x0d) {
-           
-      } else if (c == 0x0a) {
-        if (_DEBUG_) Serial.println();
-      } else if ( c < 0x20) {
-        uint8_t cc = c;
-        sprintf(tmp,"[0x%.2X]",cc);
-        if (_DEBUG_) Serial.print(tmp);
-      } else {
-        if (_DEBUG_) Serial.print(c);
-      } 
-    } // end if
-  } // end while
-  if (flag & _DEBUG_ ) Serial.println();
-}
-
-void errorDisplay(char* buff) {
-  int stat = 0;
-  Serial.print("Error:");
-  Serial.println(buff);
-  while(1) {
-    if (RUNNING_LED) {
-      digitalWrite(RUNNING_LED,stat);
-      stat = !stat;
-      delay(100);
-    }
-  }
-}
-
-void clearBuffer() {
-  while (Serial2.available())
-    Serial2.read();
-//  Serial.println();
-}
-
-
-int buildConnect(byte *buf, int keep_alive, char *client_id, char *will_topic, char *will_msg) {
+int buildConnect(char *buf, int keep_alive, char *client_id, char *will_topic, char *will_msg) {
   int rlen = 12;
   int pos = 14;
 
@@ -158,9 +92,11 @@ int buildConnect(byte *buf, int keep_alive, char *client_id, char *will_topic, c
   rlen = rlen + 2 + client_id_len;
   
   int will_topic_len = strlen(will_topic);
-  //Serial.println(will_topic_len);
+//  Serial.print("will_topic_len=");
+//  Serial.println(will_topic_len);
   int will_msg_len = strlen(will_msg);
-  //Serial.println(will_msg_len);
+//  Serial.print("will_msg_len=");
+//  Serial.println(will_msg_len);
 
   if (will_topic_len > 0 && will_msg_len > 0) {
     buf[pos++] = 0x00;
@@ -194,7 +130,7 @@ int buildConnect(byte *buf, int keep_alive, char *client_id, char *will_topic, c
   return buf[1] + 2;  
 }
 
-int buildPublish(byte *buf, char *topic, char *msg) {
+int buildPublish(char *buf, char *topic, char *msg) {
   int tlen = strlen(topic);
   for(int i=0;i<tlen;i++) {
     buf[4+i] = topic[i];
@@ -210,130 +146,101 @@ int buildPublish(byte *buf, char *topic, char *msg) {
   return buf[1] + 2;   
 }
 
+void mqttPingreq() {
+  static long lastKeepAlive = 0;
+  char pingreq[] = {0xc0,0x00};
+  long now = millis();
+  if (lastKeepAlive  > now) return;
 
-void hexDump(byte *buf, int msize) {
-  Serial.print("\nmsize=");
-  Serial.println(msize);
-  for(int i=0;i<msize;i++) {
-    if (buf[i] < 0x10) Serial.print("0");
-    Serial.print(buf[i],HEX);
-    Serial.print(" ");
-  }
+  //Send to PINGREQ
   Serial.println();
-}
+  Serial.println("Sending PINGREQ");
+  int ret = sendData(-1, pingreq, 2, "", 0);
+  if (ret) errorDisplay("PINGREQ send fail");
 
-int getIpAddress(char *buf, int szbuf, int timeout) {
-  int len=0;
-  int pos=0;
-  char line[128];
-    
-  long int time = millis();
-
-  Serial2.print("AT+CIPSTA?\r\n");
-
-  while( (time+timeout) > millis()) {
-    while(Serial2.available())  {
-      char c = Serial2.read(); // read the next character.
-      if (c == 0x0d) {
-          
-      } else if (c == 0x0a) {
-        if (_DEBUG_) {
-          Serial.print("Read=[");
-          Serial.print(line);
-          Serial.println("]");
-        }
-        int offset;
-        for(offset=0;offset<pos;offset++) {
-          if(line[offset] == '+') break;
-        }
-        if (strncmp(&line[offset],"+CIPSTA:ip:",11) == 0) {
-          strcpy(buf,&line[12+offset]);
-          len = strlen(buf) - 1;
-          buf[len] = 0;
-        }
-        if (strcmp(line,"OK") == 0) return len;
-        pos=0;
-        line[pos]=0;
-      } else {
-        line[pos++]=c;
-        line[pos]=0;
-      }
-    }  
+  //Wait for PINGRESP
+  waitForString("+IPD", 4, 1000);
+#if 0
+  if (!waitForString("+IPD", 4, 5000)) {
+    errorDisplay("PINGRESP Fail");
   }
-  return len;
+#endif
+  getResponse(1000);
+  //ATmegaではlong=int*1000はマイナスになる
+  //long=long(int)*1000は正しい値になる
+  lastKeepAlive = now + long(MQTT_KEEP_ALIVE) * 1000;
+  if (lastKeepAlive < 0) lastKeepAlive = long(MQTT_KEEP_ALIVE) * 1000; // OverFlow
+//  Serial.print("lastKeepAlive(9)=");
+//  Serial.println(lastKeepAlive);
 }
 
+void mqttPublish(char * buf, int blen) {
+  //Send to PUBLISH
+  int ret = sendData(-1, buf, blen, "", 0);
+  if (ret) errorDisplay("PUBLISH send fail");
 
-int getMacAddress(char *buf, int szbuf, int timeout) {
-  int len=0;
-  int pos=0;
-  char line[128];
-    
-  long int time = millis();
-
-  Serial2.print("AT+CIPSTAMAC?\r\n");
-
-  while( (time+timeout) > millis()) {
-    while(Serial2.available())  {
-      char c = Serial2.read(); // read the next character.
-      if (c == 0x0d) {
-          
-      } else if (c == 0x0a) {
-        if (_DEBUG_) {
-          Serial.print("Read=[");
-          Serial.print(line);
-          Serial.println("]");
-        }
-        if (strncmp(line,"+CIPSTAMAC:",11) == 0) {
-          strcpy(buf,&line[12]);
-          len = strlen(buf) - 1;
-          buf[len] = 0;
-        }
-        if (strcmp(line,"OK") == 0) return len;
-        pos=0;
-        line[pos]=0;
-      } else {
-        line[pos++]=c;
-        line[pos]=0;
-      }
-    }  
+  //Wait for PUBACK
+  waitForString("+IPD", 4, 1000);
+#if 0
+  if (!waitForString("+IPD", 4, 5000)) {
+    errorDisplay("PUBACK Fail");
   }
-  return len;
+#endif
+  getResponse(1000);
 }
+
+
+void mqttDisconnect() {
+  char disconnect[] = {0xe0,0x00};
+  //Send to DISCONNECT
+  int ret = sendData(-1, disconnect, 2, "", 0);
+  if (ret) errorDisplay("DISCONNECT send fail");
+
+  //Wait for CLOSE
+  if (!waitForString("CLOSE", 5, 5000)) {
+    errorDisplay("CLOSE Fail");
+  }
+  clearBuffer();
+}
+
 
 void setup(){
-  char at[128];
-  byte buf[128];
+  char cmd[128];
   int msize;
 
-  Serial.begin(9600);
-  Serial2.begin(4800);
-  while(!Serial2);
+  Serial.begin(115200);
+  delay(5000);
+  Serial.print("_MODEL_=");
+  Serial.println(_MODEL_);
+  _SERIAL_.begin(_BAUDRATE_);
+
+  //Save Serial Object
+  serialSetup(_SERIAL_);
 
   if (RUNNING_LED) {
     pinMode(RUNNING_LED,OUTPUT);
     digitalWrite(RUNNING_LED,LOW);
   }
-  if (STOP_BUTTON) attachInterrupt(0, interrupt, FALLING);
+  if (STOP_BUTTON) pinMode(STOP_BUTTON, INPUT);   
 
   //Enable autoconnect
-  Serial2.print("AT+CWAUTOCONN=1\r\n");
+  sendCommand("AT+CWAUTOCONN=1");
   if (!waitForString("OK", 2, 1000)) {
     errorDisplay("AT+CWAUTOCONN Fail");
   }
   clearBuffer();
- 
-  Serial2.print("AT+RST\r\n");
+
+  //Restarts the Module
+  sendCommand("AT+RST");
   if (!waitForString("WIFI GOT IP", 11, 10000)) {
-    errorDisplay("AT+RST Fail");
+    errorDisplay("ATE+RST Fail");
   }
   clearBuffer();
 
-  //Establishes TCP Connection
-  sprintf(at,"AT+CIPSTART=\"TCP\",\"%s\",%d\r\n",MQTT_SERVER,MQTT_PORT);
-  Serial2.print(at);
-  if (!waitForString("OK", 2, 5000)) {
-    errorDisplay("AT+CIPSTART Fail");
+  //Local echo off
+  sendCommand("ATE0");
+  if (!waitForString("OK", 2, 1000)) {
+    errorDisplay("ATE0 Fail");
   }
   clearBuffer();
 
@@ -351,23 +258,23 @@ void setup(){
   Serial.print(MACaddress);
   Serial.println("]");
 
-  Serial.print("MQTT CONNECTT.....");
-  //Client requests a connection to a server
-  msize =buildConnect(buf,MQTT_KEEP_ALIVE,MACaddress,MQTT_TOPIC,MQTT_WILL_MSG);
-  if (_DEBUG_) hexDump(buf,msize);
-  sprintf(at,"AT+CIPSEND=%02d\r\n",msize);
-  Serial2.print(at);
+  //Establishes TCP Connection
+  sprintf(cmd,"AT+CIPSTART=\"TCP\",\"%s\",%d",MQTT_SERVER,MQTT_PORT);
+  sendCommand(cmd);
   if (!waitForString("OK", 2, 5000)) {
-    errorDisplay("AT+CIPSEND Fail");
-  }
-  if (!waitForString(">", 1, 5000)) {
-    errorDisplay("Server Not Response");
+    Serial.println("Check your MQTT SERVER"); 
+    errorDisplay("AT+CIPSTART Fail");
   }
   clearBuffer();
-  for (int i=0;i<msize;i++)Serial2.write(buf[i]);                  
-  if (!waitForString("SEND OK", 7, 5000)) {
-    errorDisplay("Server Not Receive my data");
-  }
+
+  //Client requests a connection to a server
+  Serial.print("MQTT CONNECT.....");
+  //Client requests a connection to a server
+  msize = buildConnect(cmd,MQTT_KEEP_ALIVE,MACaddress,MQTT_WILL_TOPIC,MQTT_WILL_MSG);
+  if (_DEBUG_) hexDump(cmd,msize);
+  int ret = sendData(-1, cmd, msize, "", 0);
+  if (ret) errorDisplay("MQTT Connect Fail");
+
   //Wait for CONNACK
   if (!waitForString("+IPD", 4, 5000)) {
     errorDisplay("CONNACK Fail");
@@ -376,126 +283,60 @@ void setup(){
   Serial.println("OK");
 
   Serial.println("Start MQTT Publish [" + String(_MODEL_) + "] to " + String(MQTT_SERVER));
-  lastmillis = millis();
+  lastSendPacketTime = millis();
 }
 
 void loop(){
-  static int loop = 0;
-  static int timer1 = 0;
-  static int timer2 = 0;
-  static int running_state = 1;
-  char at[128];
+  static int counter = 0;
+  static int timer = INTERVAL;
+  static int ledStatus = 1;
   char msg[128];
-  byte buf[128];
-  byte pingreq[] = {0xc0,0x00};
-  byte disconnect[] = {0xe0,0x00};
+  char payload[128];
   int msize;
 
-  if (swState == 1) {
-    Serial.println("Sending DISCONNEC");
-    Serial2.print("AT+CIPSEND=02\r\n");
-    if (!waitForString("OK", 2, 5000)) {
-      errorDisplay("AT+CIPSEND Fail");
-    }
-    if (!waitForString(">", 1, 5000)) {
-      errorDisplay("Server Not Response");
-    }
-    clearBuffer();
-    for (int i=0;i<2;i++)Serial2.write(disconnect[i]); 
-    if (!waitForString("SEND OK", 7, 5000)) {
-      errorDisplay("Server Not Receive my data");
-    }
-    if (!waitForString("CLOSE", 5, 5000)) {
-      errorDisplay("CLOSE Fail");
-    }
-    clearBuffer();
+  int buttonState = digitalRead(STOP_BUTTON);
+  if (buttonState == 1) {
+    mqttDisconnect();
     Serial.println();
+    Serial.println("Sending DISCONNECT");
     Serial.println("Publish end");
     if (RUNNING_LED) digitalWrite(RUNNING_LED,LOW);
     while(1) { }
   }
   
   unsigned long now = millis();
-  if ( (now - lastmillis) < 0) {
-    lastmillis = now;
+  if ( (now - lastSendPacketTime) < 0) {
+    lastSendPacketTime = now;
   }
-  if ( (now - lastmillis) > 1000) {
-    lastmillis = now;
-    timer1++;
-    timer2++;
-    if (RUNNING_LED) digitalWrite(RUNNING_LED,running_state);
-    running_state = !running_state;
+
+  if ( (now - lastSendPacketTime) > 1000) {
+    lastSendPacketTime = now;
+    timer++;
+    if (RUNNING_LED) digitalWrite(RUNNING_LED,ledStatus);
+    ledStatus = !ledStatus;
 #if 0
-    Serial.print("running_state=");
-    Serial.print(running_state);
+    Serial.print("ledStatus=");
+    Serial.print(ledStatus);
     Serial.print("timer=");
-    Serial.print(timer1);
-    Serial.print(" ");
-    Serial.println(timer2);
+    Serial.print(timer);
 #endif
-    if ( (timer1 % 10) == 0) Serial.print("+");
-    if ( (timer1 % 10) != 0) Serial.print(".");
+    if ( (timer % 10) == 0) Serial.print("+");
+    if ( (timer % 10) != 0) Serial.print(".");
 
-    if (timer1 == INTERVAL) { // Publish
-      Serial.println("Sending PUBLISH");
+    if (timer >= INTERVAL) { // Publish
       //Publish message
-      sprintf(msg,"Publish from %s #%03d",_MODEL_, loop);
+      sprintf(msg,"Publish from %s #%03d",_MODEL_, counter);
+      Serial.println();
+      Serial.println("Sending PUBLISH");
       Serial.println(msg);
-      loop++;
-      if (loop == 1000) loop = 0;
-      msize =buildPublish(buf,MQTT_TOPIC,msg);
-      if (_DEBUG_) hexDump(buf,msize);
-      sprintf(at,"AT+CIPSEND=%02d\r\n",msize);
-      Serial2.print(at);
-      if (!waitForString("OK", 2, 5000)) {
-        errorDisplay("AT+CIPSEND Fail");
-      }
-      if (!waitForString(">", 1, 5000)) {
-        errorDisplay("Server Not Response");
-      }
-      clearBuffer();
-      for (int i=0;i<msize;i++)Serial2.write(buf[i]); 
-      if (!waitForString("SEND OK", 7, 5000)) {
-        errorDisplay("Server Not Receive my data");
-      }
-      //Wait for PUBACK
-      waitForString("+IPD", 4, 1000);
-#if 0
-      if (!waitForString("+IPD", 4, 5000)) {
-        errorDisplay("PUBACK Fail");
-      }
-#endif
-      getResponse(1000);
-      timer1 = 0;
+      counter++;
+      if (counter == 1000) counter = 0;
+      msize = buildPublish(payload, MQTT_TOPIC, msg);
+      if (_DEBUG_) hexDump(payload,msize);
+      mqttPublish(payload,msize);
+      timer = 0;
     }
-    if (timer2 == MQTT_KEEP_ALIVE) { // PingReq
-      Serial.println("Sending PINGREQ");
-      Serial2.print("AT+CIPSEND=02\r\n");
-      if (!waitForString("OK", 2, 5000)) {
-        errorDisplay("AT+CIPSEND Fail");
-      }
-      if (!waitForString(">", 1, 5000)) {
-        errorDisplay("Server Not Response");
-      }
-      clearBuffer();
-      for (int i=0;i<2;i++) Serial2.write(pingreq[i]); 
-      if (!waitForString("SEND OK", 7, 5000)) {
-        errorDisplay("Server Not Receive my data");
-      }
-      //Wait for PINGRESP
-      waitForString("+IPD", 4, 1000);
-#if 0
-      if (!waitForString("+IPD", 4, 5000)) {
-        errorDisplay("PINGRESP Fail");
-      }
-#endif
-      getResponse(1000);
-      timer2 = 0;
-    } else {
-      getResponse(10);
-    }
-    
   } // endif
-
+  mqttPingreq();
 }
 

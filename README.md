@@ -1,5 +1,7 @@
 # MQTT_via_ESP01   
-TCP/UDP Applicaton for Arduino & STM32F103 using ESP8266's AT firmware.   
+TCP/UDP Applicaton for ATmega & STM32F103 using ESP8266's AT firmware.   
+You don't need An Ethernet card.   
+You need only ESP8266 module.   
 
 **MQTT_Publish_ESP01**   
 Simple Pubish Application.   
@@ -14,29 +16,36 @@ It DON'T require any library.
 ![slide1](https://user-images.githubusercontent.com/6020549/35101108-a13451d8-fca1-11e7-8cfd-37d71f18f880.JPG)
 
 **Socket_Client_ESP01**   
-Simple Socket Client Application.   
+Simple TCP/IP Client Application.   
 Supprted arduino & stm32f103.   
 It DON'T require any library.   
 
 **Socket_Server_ESP01**   
-Simple Socket Server Application.   
+Simple TCP/IP Server Application.   
 Supprted arduino & stm32f103.   
 It DON'T require any library.   
 
 **Socket_Client_WiFiEsp**   
-Simple Socket Client Application using WiFiEsp.   
+Simple TCP/IP Client Application using WiFiEsp.   
 Supprted arduino ONLY.   
 It require Arduino WiFi library for ESP8266 modules.   
+https://github.com/bportaluri/WiFiEsp   
 
 **Socket_Server_WiFiEsp**   
-Simple Socket Server Application using WiFiEsp.   
+Simple TCP/IP Server Application using WiFiEsp.   
 Supprted arduino ONLY.   
 It require Arduino WiFi library for ESP8266 modules.   
+https://github.com/bportaluri/WiFiEsp   
 
 ![slide2](https://user-images.githubusercontent.com/6020549/35101341-9019e394-fca2-11e7-9edd-0aa9086fd5db.JPG)
 
 **NTP_Client_ESP01**   
 Simple NTP Client Application.   
+Supprted arduino & stm32f103.   
+It DON'T require any library.   
+
+**SNTP_Client_ESP01**   
+Simple SNTP Client Application.   
 Supprted arduino & stm32f103.   
 It DON'T require any library.   
 
@@ -98,14 +107,15 @@ I'm using esp8266_flasher.exe and v2.0 AT Firmware(ESP).bin.
     OK
     
     WIFI DISCONNECT
-    
+
+
+_*** UNO ONLY ***_   
+_*** Change baudrate to 4800bps ***_   
+_*** Because there is no the 2nd UART in UNO ***_   
+_*** So UNO use Software Serial with low speed ***_
+
     AT+UART_DEF=4800,8,1,0,0
-
-
-_*** change baudrate to 4800bps ***_
-
-
-
+    
     OK
     at
     
@@ -124,45 +134,53 @@ _*** change baudrate to 4800bps ***_
 
 # Connect ESP-01 to UNO.
 
-ESP-01(Tx) - Arduino(D4)   
-ESP-01(Rx) - Arduino(D5)   
+ESP-01(Tx) - UNO(D4)   
+ESP-01(Rx) - UNO(D5)   
 
-![esp01-mqtt-uno](https://user-images.githubusercontent.com/6020549/33831441-78b95a54-debb-11e7-9001-059a0b1a1876.jpg)
+![ESP01-MQTT-UNO](https://user-images.githubusercontent.com/6020549/55268764-656f9f00-52d0-11e9-9120-360e397ffae0.jpg)
 
 You can't use on-board 3.3V.    
 An electric current is insufficient.   
 
 ----
 
-# Connect ESP-01 to STM32F101.
+# Connect ESP-01 to MEGA2560.
+
+ESP-01(Tx) - MEGA(D19)   
+ESP-01(Rx) - MEGA(D18)   
+
+![ESP01-MQTT-MEGA](https://user-images.githubusercontent.com/6020549/55268794-9fd93c00-52d0-11e9-8cca-4f4bd202d745.jpg)
+
+You can't use on-board 3.3V.    
+An electric current is insufficient.   
+
+----
+
+# Connect ESP-01 to STM32F101(MAPLE Core).
 
 ESP-01(Tx) - STM32F103(PA3)   
 ESP-01(Rx) - STM32F103(PA2)   
 
-![esp01-mqtt-stm32f103](https://user-images.githubusercontent.com/6020549/33991405-d2e906de-e111-11e7-8691-d7a58492d3b8.jpg)
+![ESP01-MQTT-STM32F103_MAPLE-Core](https://user-images.githubusercontent.com/6020549/55268802-b1badf00-52d0-11e9-9c35-1e2a674c8dda.jpg)
 
-I'm using STM32 Core.    
+MAPLE Core.    
 https://github.com/rogerclarkmelbourne/Arduino_STM32   
 
 ----
 
-# Software requirement
-Arduino WiFi library for ESP8266 modules   
-https://github.com/bportaluri/WiFiEsp   
+# Connect ESP-01 to STM32F101(ST Core).
 
-If you use SMTP, you need gmail account.   
+ESP-01(Tx) - STM32F103(PA10)   
+ESP-01(Rx) - STM32F103(PA9)   
 
-----
+![ESP01-MQTT-STM32F103_ST-Core](https://user-images.githubusercontent.com/6020549/55268807-c303eb80-52d0-11e9-9056-7b15655bff30.jpg)
 
-# Flash sketch to your UNO/STM32F103.
-
-Enjoy!!   
-
-![esp01-mqtt-uno-tft](https://user-images.githubusercontent.com/6020549/33193265-cbbd2618-d10a-11e7-9dba-dd60643c27bb.JPG)
+ST Core.    
+https://github.com/stm32duino/Arduino_Core_STM32   
 
 ----
 
-# AT Firmware Upate
+# How to Firmware Upate
 
 1.Make sure TE(terminal equipment) is in sta or sta+ap mode   
     
@@ -186,5 +204,11 @@ Enjoy!!
     +CIPUPDATE:4    start start
     
     OK
+
+----
+
+Enjoy!!   
+
+![esp01-mqtt-uno-tft](https://user-images.githubusercontent.com/6020549/33193265-cbbd2618-d10a-11e7-9dba-dd60643c27bb.JPG)
 
 

@@ -1,183 +1,108 @@
 /*
- * SMTP Client with AT firmware
+ * SMTP Client using ESP8266 AT Instruction Set
  * 
- * ESP8266----------ATmega
+ * for ATmega328
+ * ESP8266----------ATmega328
  * TX     ----------RX(D4)
  * RX     ----------TX(D5)
  * 
- * ESP8266----------STM32F103
- * TX     ----------RX2(PA3)
- * RX     ----------TX2(PA2)
+ * for ATmega2560
+ * ESP8266----------ATmega2560
+ * TX     ----------RX(D19)
+ * RX     ----------TX(D18)
  * 
+ * for STM32F103 MAPLE Core
+ * ESP8266----------STM32F103
+ * TX     ----------RX(PA3)
+ * RX     ----------TX(PA2)
+ * 
+ * for STM32F103 ST Core
+ * ESP8266----------STM32F103
+ * TX     ----------RX(PA10)
+ * RX     ----------TX(PA9) 
+ *  
  */
 
-#if defined(__AVR__)
+#include "espLib.h"
+
+//for Arduino UNO(ATmega328)
+#if defined(__AVR_ATmega328__)  || defined(__AVR_ATmega328P__)
 #include <SoftwareSerial.h>
-#define rxPin           4    // D4
-#define txPin           5    // D5
+#define rxPin    4    // D4
+#define txPin    5    // D5
 SoftwareSerial Serial2(rxPin, txPin); // RX, TX
-#define _MODEL_  "arduino"
+#define _BAUDRATE_ 4800
+#define _SERIAL_   Serial2
+#define _MODEL_    "ATmega328"
+
+//for Arduino MEGA(ATmega2560)
+#elif defined(__AVR_ATmega2560__)
+#define _BAUDRATE_ 115200
+#define _SERIAL_   Serial1
+#define _MODEL_    "ATmega2560"
+
+//for STM32F103(MAPLE Core)
+#elif defined(__STM32F1__)
+#define _BAUDRATE_ 115200
+#define _SERIAL_   Serial2
+#define _MODEL_    "STM32F103 MAPLE Core"
+
+//for STM32F103(ST Core)
+#else
+HardwareSerial Serial1(PA10, PA9);
+#define _BAUDRATE_ 115200
+#define _SERIAL_   Serial1
+#define _MODEL_    "STM32F103 ST Core"
 #endif
 
-#if defined(__STM32F1__)
-#define _MODEL_  "stm32f103"
-#endif
 
 #define SMTP_SERVER "smtp.gmail.com"
 #define SMTP_PORT   465
 #define BASE64_USER "Base64 Encorded Your Username of gmail" // Username of gmail
 #define BASE64_PASS "Base64 Encorded Your Password of gmail" // Password of gmail
-#define MAIL_FROM   "abcd@gmail.com"                  // Your gmail account
-#define MAIL_TO     "abcd@provider.com"               // Mail To
-#define JAPANESE    1                                 // Send Japanese
-#define _DEBUG_     0
+#define MAIL_FROM   "mailFrom@gmail.com"                     // Your gmail account
+#define MAIL_TO     "mailTo@provider.com"                    // Mail To
+#define JAPANESE    0                                        // Japanese mail contents
 
-void putChar(char c) {
-  char tmp[10];
-  if ( c == 0x0a) {
-    Serial.println();
-  } else if (c == 0x0d) {
-    
-  } else if ( c < 0x20) {
-    uint8_t cc = c;
-    sprintf(tmp,"[0x%.2X]",cc);
-    Serial.print(tmp);
-  } else {
-    Serial.print(c);
-  }
-}
-
-//Wait for specific input string until timeout runs out
-bool waitForString(char* input, int length, unsigned int timeout) {
-  unsigned long end_time = millis() + timeout;
-  char current_byte = 0;
-  int index = 0;
-
-   while (end_time >= millis()) {
-    
-      if(Serial2.available()) {
-        
-        //Read one byte from serial port
-        current_byte = Serial2.read();
-//        Serial.print(current_byte);
-        if (_DEBUG_) putChar(current_byte);
-        if (current_byte != -1) {
-          //Search one character at a time
-          if (current_byte == input[index]) {
-            index++;
-            
-            //Found the string
-            if (index == length) {              
-              return true;
-            }
-          //Restart position of character to look for
-          } else {
-            index = 0;
-          }
-        }
-      }
-  }  
-  //Timed out
-  return false;
-}
-
-//Print error
-void errorDisplay(char* buff) {
-  Serial.print("Error:");
-  Serial.println(buff);
-  while(1) {}
-}
-
-void clearBuffer() {
-  while (Serial2.available())
-    Serial2.read();
-//  Serial.println();
-}
-
-void getResponse(int timeout){
-  char c;
-  bool flag = false;
-  char tmp[10];
-  
-  long int time = millis() + timeout;
-  while( time > millis()) {
-    if (Serial2.available()) {
-      flag = true;
-      c = Serial2.read();
-      if (c == 0x0d) {
-           
-      } else if (c == 0x0a) {
-        if (_DEBUG_) Serial.println();
-      } else if ( c < 0x20) {
-        uint8_t cc = c;
-        sprintf(tmp,"[0x%.2X]",cc);
-        if (_DEBUG_) Serial.print(tmp);
-      } else {
-        if (_DEBUG_) Serial.print(c);
-      } 
-    } // end if
-  } // end while
-  if (flag & _DEBUG_) Serial.println();
-}
-
-
-void hexDump(byte *buf, int msize) {
-  Serial.print("\nmsize=");
-  Serial.println(msize);
-  for(int i=0;i<msize;i++) {
-    if (buf[i] < 0x10) Serial.print("0");
-    Serial.print(buf[i],HEX);
-    Serial.print(" ");
-  }
-  Serial.println();
-}
-
-int sendSMTP(char *buf, int msize) {
-  char at[128];
-//  hexDump(buf,msize);
-  sprintf(at,"AT+CIPSEND=%02d\r\n",msize);
-  Serial2.print(at);
-  if (!waitForString("OK", 2, 5000)) {
-    errorDisplay("AT+CIPSEND Fail");
-  }
-  if (!waitForString(">", 1, 5000)) {
-    errorDisplay("Server Not Response");
-  }
-
-  if (_DEBUG_) {
-    Serial.println();
-    Serial.print(">>>>>>");
-    Serial.print(buf);
-  }
-  for (int i=0;i<msize;i++)Serial2.write(buf[i]);                  
-  if (!waitForString("SEND OK", 7, 5000)) {
-    errorDisplay("Server Not Receive my data");
-  }
-
-  return 1;
-}
 
 void setup(){
   char buf[128];
   int msize;
 
-  delay(1000);
-  Serial.begin(9600);
+  Serial.begin(115200);
+  delay(5000);
+  Serial.print("_MODEL_=");
+  Serial.println(_MODEL_);
+  _SERIAL_.begin(_BAUDRATE_);
 
-  //Make sure ESP8266 is set to 4800
-  Serial2.begin(4800);
+  //Save Serial Object
+  serialSetup(_SERIAL_);
 
   Serial.println("Start SMTP Client [" + String(_MODEL_) + "] to " + String(SMTP_SERVER) );
 
   //Enable autoconnect
-  Serial2.print("AT+RST\r\n");
+  sendCommand("AT+CWAUTOCONN=1");
+  if (!waitForString("OK", 2, 1000)) {
+    errorDisplay("AT+CWAUTOCONN Fail");
+  }
+  clearBuffer();
+
+  //Restarts the Module
+  sendCommand("AT+RST");
   if (!waitForString("WIFI GOT IP", 11, 10000)) {
-    errorDisplay("AT+RST Fail");
+    errorDisplay("ATE+RST Fail");
+  }
+  clearBuffer();
+
+  //Local echo off
+  sendCommand("ATE0");
+  if (!waitForString("OK", 2, 1000)) {
+    errorDisplay("ATE0 Fail");
   }
   clearBuffer();
 
   //Set the size of SSL buffer
-  Serial2.print("AT+CIPSSLSIZE=4096\r\n");
+  sendCommand("AT+CIPSSLSIZE=4096");
   if (!waitForString("OK", 2, 5000)) {
     errorDisplay("AT+CIPSSLSIZET Fail");
   }
@@ -185,8 +110,8 @@ void setup(){
 
   //Establishes SSL Connection
   Serial.print("Connect " + String(SMTP_SERVER) + ".....");
-  sprintf(buf,"AT+CIPSTART=\"SSL\",\"%s\",%d\r\n",SMTP_SERVER,SMTP_PORT);
-  Serial2.print(buf);
+  sprintf(buf,"AT+CIPSTART=\"SSL\",\"%s\",%d\r\n",SMTP_SERVER, SMTP_PORT);
+  sendCommand(buf);
   if (!waitForString("220 smtp.gmail.com", 18, 5000)) {
     errorDisplay("AT+CIPSTART Fail");
   }

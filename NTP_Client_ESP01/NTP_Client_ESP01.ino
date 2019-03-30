@@ -1,155 +1,74 @@
 /*
- * NTP Client with AT Command
+ * NTP Client using ESP8266 AT Instruction Set
  *  
- * ESP8266----------ATmega
+ * for ATmega328
+ * ESP8266----------ATmega328
  * TX     ----------RX(D4)
  * RX     ----------TX(D5)
  * 
+ * for ATmega2560
+ * ESP8266----------ATmega2560
+ * TX     ----------RX(D19)
+ * RX     ----------TX(D18)
+ * 
+ * for STM32F103 MAPLE Core
  * ESP8266----------STM32F103
- * TX     ----------RX2(PA3)
- * RX     ----------TX2(PA2)
+ * TX     ----------RX(PA3)
+ * RX     ----------TX(PA2)
+ * 
+ * for STM32F103 ST Core
+ * ESP8266----------STM32F103
+ * TX     ----------RX(PA10)
+ * RX     ----------TX(PA9)
  * 
  */
 
-#if defined(__AVR__)
-#include <SoftwareSerial.h>
+#include "espLib.h"
 #include <TimeLib.h>     // https://github.com/PaulStoffregen/Time
+
+//for Arduino UNO(ATmega328)
+#if defined(__AVR_ATmega328__)  || defined(__AVR_ATmega328P__)
+#include <SoftwareSerial.h>
 #define rxPin    4    // D4
 #define txPin    5    // D5
 SoftwareSerial Serial2(rxPin, txPin); // RX, TX
-#define BaudRate 4800
-#define _MODEL_  "arduino"
+#define _BAUDRATE_ 4800
+#define _SERIAL_   Serial2
+#define _MODEL_    "ATmega328"
+
+//for Arduino MEGA(ATmega2560)
+#elif defined(__AVR_ATmega2560__)
+#define _BAUDRATE_ 115200
+#define _SERIAL_   Serial1
+#define _MODEL_    "ATmega2560"
+
+//for STM32F103(MAPLE Core)
+#elif defined(__STM32F1__)
+#define _BAUDRATE_ 115200
+#define _SERIAL_   Serial2
+#define _MODEL_    "STM32F103 MAPLE Core"
+
+//for STM32F103(ST Core)
+#else
+HardwareSerial Serial1(PA10, PA9);
+#define _BAUDRATE_ 115200
+#define _SERIAL_   Serial1
+#define _MODEL_    "STM32F103 ST Core"
 #endif
 
-#if defined(__STM32F1__)
-#include <TimeLib.h>     // https://github.com/PaulStoffregen/Time
-#define BaudRate 4800
-#define _MODEL_  "stm32f103"
-#endif
-
-#define INTERVAL        60                     // Interval of Packet Send(Second)
+#define INTERVAL        10                     // Interval of Packet Send(Second)
 #define NTP_SERVER      "ntp.jst.mfeed.ad.jp"  // NTP Server
 #define NTP_PORT        123                    // NTP Port
 #define LOCAL_PORT      2390                   // Local Port
 #define LINK_ID         3                      // Link ID
 #define NTP_PACKET_SIZE 48                     // NTP Packet Size
 #define TIME_ZONE       9                      // Time Difference from GMT
-#define _DEBUG_         0                      // for Debug
 
-char cmd[64];
 
 // NTP Packet Buffer (Send & Receive)
 char packetBuffer[NTP_PACKET_SIZE];
 // Last Packet Send Time (MilliSecond)
 unsigned long lastSendPacketTime = 0;
-
-
-//Wait for specific input string until timeout runs out
-bool waitForString(char* input, int length, unsigned int timeout) {
-
-  unsigned long end_time = millis() + timeout;
-  char current_byte = 0;
-  int index = 0;
-
-   while (end_time >= millis()) {
-    
-      if(Serial2.available()) {
-        
-        //Read one byte from serial port
-        current_byte = Serial2.read();
-        if (_DEBUG_) Serial.print(current_byte);
-        if (current_byte != -1) {
-          //Search one character at a time
-          if (current_byte == input[index]) {
-            index++;
-            
-            //Found the string
-            if (index == length) {              
-              return true;
-            }
-          //Restart position of character to look for
-          } else {
-            index = 0;
-          }
-        }
-      }
-  }  
-  //Timed out
-  return false;
-}
-
-//Remove all bytes from the receive buffer
-void clearBuffer() {
-  while (Serial2.available())
-    Serial2.read();
-  if (_DEBUG_) Serial.println("");
-}
-
-//Send AT Command
-void sendCommand(char* buff) {
-  if (_DEBUG_) {
-    Serial.println("");
-    Serial.print(buff);
-    Serial.println("-->");
-  }
-  Serial2.println(buff);
-  Serial2.flush();
-}
-
-//Print error
-void errorDisplay(char* buff) {
-  Serial.print("Error:");
-  Serial.println(buff);
-  while(1) {}
-}
-
-//Receive Message
-int readResponse(int id, char * buf,int sz_buf, int timeout) {
-  int len=0;
-  int flag=0;
-  int datalen;
-  long int time = millis();
-
-  // id < 0  +IPD,nn:ReceiveData
-  // id = 0  +IPD,0,nn:ReceiveData
-  // id > 0  +IPD,id,nn:ReceiveData
-  while( (time+timeout) > millis()) {
-    while(Serial2.available())  {
-      char current_byte = Serial2.read(); // read the next character.
-      if (_DEBUG_) {
-        Serial.print(current_byte,HEX);
-        Serial.print("[");
-        Serial.print(current_byte);
-        Serial.print("]");
-        Serial.print(flag);
-        Serial.print(" ");
-        Serial.print(datalen);
-        Serial.print(" ");
-        Serial.println(len);
-      }
-      if (flag == 0) {
-        if (current_byte != 0x2c) continue;
-        flag++;
-        if (id < 0) flag++;
-      } else if (flag == 1) {
-        if (current_byte != 0x2c) continue;
-        flag++;
-      } else if (flag == 2) {
-        if (current_byte == 0x3a) { // :
-          datalen=atoi(buf);
-          flag++;
-          len=0;
-        } else {
-          buf[len++]=current_byte;
-        }
-      } else {
-        buf[len++]=current_byte;
-        if (len == datalen) return len;
-      }
-    } // end while 
-  } // end while
-  return -len;
-}
 
 // dow_char() Return day of the week string(English) [Sun,Mon....]
 char * dow_char_EN(byte days) {
@@ -189,8 +108,14 @@ void showTime(char * title, time_t timet, char * dow) {
 
 void setup(void)
 {
-  delay(1000);Serial.begin(9600);
-  Serial2.begin(BaudRate);
+  Serial.begin(115200);
+  delay(5000);
+  Serial.print("_MODEL_=");
+  Serial.println(_MODEL_);
+  _SERIAL_.begin(_BAUDRATE_);
+
+  //Save Serial Object
+  serialSetup(_SERIAL_);
 
   //Enable autoconnect
   sendCommand("AT+CWAUTOCONN=1");
@@ -213,12 +138,19 @@ void setup(void)
   }
   clearBuffer();
 
-  //Get local IP address 
-  sendCommand("AT+CIPSTA?");
-  if (!waitForString("OK", 2, 1000)) {
-    errorDisplay("AT+CIPSTA? Fail");
-  }
-  clearBuffer();
+  //Get My IP Address
+  char IPaddress[64];
+  getIpAddress(IPaddress,sizeof(IPaddress),2000);
+  Serial.print("IPaddress=[");
+  Serial.print(IPaddress);
+  Serial.println("]");
+  
+  //Get My MAC Address
+  char MACaddress[64];
+  getMacAddress(MACaddress,sizeof(MACaddress),2000);
+  Serial.print("MACaddress=[");
+  Serial.print(MACaddress);
+  Serial.println("]");  
 
   //Enable multi connections
   sendCommand("AT+CIPMUX=1");
@@ -229,11 +161,12 @@ void setup(void)
 
   //Establish UDP Transmission
   //AT+CIPSTART=<link ID>,<type="UDP">,<remoteIP="0">,<remote port=0>,<UDP local port>,<UDP mode=2>
+  char cmd[64];
   sprintf(cmd,"AT+CIPSTART=%d,\"UDP\",\"0\",0,%u,2", LINK_ID, LOCAL_PORT);
 //  sendCommand("AT+CIPSTART=3,\"UDP\",\"0\",0,2390,2");
   sendCommand(cmd);
   if (!waitForString("OK", 2, 1000)) {
-    errorDisplay("AT+CIPMUX Fail");
+    errorDisplay("AT+CIPSTART Fail");
   }
   clearBuffer();
 
@@ -257,7 +190,7 @@ void loop(void) {
     } else {
       Serial.print(".");
     }
-    if (_DEBUG_) Serial.println("counter=" + String(counter));
+//    if (_DEBUG_) Serial.println("counter=" + String(counter));
     if (counter == INTERVAL) {
       // Send request o NTP server
       sendNTPpacket(NTP_SERVER, NTP_PORT);
@@ -266,11 +199,11 @@ void loop(void) {
   }
 
   // Read data from NTP server
-  int readLen = readResponse(3, packetBuffer, NTP_PACKET_SIZE, 1000);
+  int readLen = readResponse(LINK_ID, packetBuffer, NTP_PACKET_SIZE, 1000);
 //  Serial.print("packet received, length=");
 //  Serial.println(readLen);
-  if (readLen == 48) {
-    Serial.println("\npacket received, length=48");
+  if (readLen == NTP_PACKET_SIZE) {
+    Serial.println("\nNTP packet received");
 
     //the timestamp starts at byte 40 of the received packet and is four bytes,
     // or two words, long. First, esxtract the two words:
@@ -295,9 +228,12 @@ void loop(void) {
     // Greenwich Mean Time(GMT)
     uint8_t DayOfWeek = dow(epoch); 
     showTime("The UTC time is ", epoch, dow_char_EN(DayOfWeek));
-    // Local time(Japan)
-    DayOfWeek = dow(epoch + (9 * 60 * 60));
-    showTime("Local time is ", epoch + (TIME_ZONE * 60 * 60), dow_char_JP(DayOfWeek));
+
+    // Local time(JAPAN)
+    if (TIME_ZONE != 0) {
+      DayOfWeek = dow(epoch + (TIME_ZONE * 60 * 60));
+      showTime("Local time is ", epoch + (TIME_ZONE * 60 * 60), dow_char_JP(DayOfWeek));
+    }
   }
 }
 
@@ -320,21 +256,10 @@ void sendNTPpacket(char *ntpSrv, int ntpPort)
   packetBuffer[15]  = 52;
 
   //Send Data
-  //AT+CIPSEND=<link ID>,<length>,<remoteIP>,<remote port>
-  sprintf(cmd,"AT+CIPSEND=%d,%u,\"%s\",%u", LINK_ID, NTP_PACKET_SIZE, ntpSrv, ntpPort);
-  sendCommand(cmd);
-  if (!waitForString(">", 1, 1000)) {
-    errorDisplay("AT+CIPSEND Fail");
-//      Serial.println("AT+CIPSEND Fail");
-//      delay(1000);
-//      continue;
+  int ret = sendData(LINK_ID, packetBuffer, NTP_PACKET_SIZE, ntpSrv, ntpPort);
+  if (ret) {
+     errorDisplay("sendData Fail");
   }
-  clearBuffer();
-  
-  //Send Packet
-  Serial2.write((uint8_t *)packetBuffer,NTP_PACKET_SIZE);
-  if (!waitForString("SEND OK", 7, 1000)) {
-     errorDisplay("SEND Fail");
-  }
+
 }
 

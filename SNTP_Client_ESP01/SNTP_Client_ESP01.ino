@@ -1,5 +1,5 @@
 /*
- * Simple TCP/IP Server using ESP8266 AT Instruction Set
+ * SNTP Client using ESP8266 AT Instruction Set
  *  
  * for ATmega328
  * ESP8266----------ATmega328
@@ -55,14 +55,15 @@ HardwareSerial Serial1(PA10, PA9);
 #define _MODEL_    "STM32F103 ST Core"
 #endif
 
-#define MY_IP           "192.168.10.190"       // MY IP
-#define MY_PORT         "9876"                 // Listen Port
+#define INTERVAL        10                     // Interval of Packet Send(Second)
+#define SNTP_SERVER     "time.google.com"      // SNTP Server
+#define TIME_ZONE       9                      // Time Difference from GMT
 
-//command to ESP
-char cmd[64];
 
-void setup(void)
-{
+// Last Packet Send Time (MilliSecond)
+unsigned long lastSendPacketTime = 0;
+
+void setup(){
   Serial.begin(115200);
   delay(5000);
   Serial.print("_MODEL_=");
@@ -93,82 +94,67 @@ void setup(void)
   }
   clearBuffer();
 
-  //Set IP address of Station
-  sprintf(cmd, "AT+CIPSTA_CUR=\"%s\"", MY_IP);
-  sendCommand(cmd);
-  if (!waitForString("OK", 2, 1000)) {
-    errorDisplay("AT+CIPSTA_CUR fail");
-  }
-  clearBuffer();
-
   //Get My IP Address
-  char IPaddress[64];
+  char IPaddress[32];
   getIpAddress(IPaddress,sizeof(IPaddress),2000);
-  Serial.print("IP Address: ");
-  Serial.println(IPaddress);
+  Serial.print("IPaddress=[");
+  Serial.print(IPaddress);
+  Serial.println("]");
 
-  //Enable multi connections
-  sendCommand("AT+CIPMUX=1");
-  if (!waitForString("OK", 2, 1000)) {
-    errorDisplay("AT+CIPMUX Fail");
-  }
-  clearBuffer();
+  //Get My MAC Address
+  char MACaddress[32];
+  getMacAddress(MACaddress,sizeof(MACaddress),2000);
+  Serial.print("MACaddress=[");
+  Serial.print(MACaddress);
+  Serial.println("]");
 
-  //Configure as TCP server 
-  sprintf(cmd, "AT+CIPSERVER=1,%s", MY_PORT);
+  //Get SDK Version
+  char ATversion[64];
+  getATVersion(ATversion,sizeof(ATversion),2000);
+  Serial.print("ATversion=[");
+  Serial.print(ATversion);
+  Serial.println("]");
+
+  //Sets the Configuration of SNTP
+  char cmd[128];
+#ifdef SNTP_SERVER
+  sprintf(cmd,"AT+CIPSNTPCFG=1,%d,\"%s\"",TIME_ZONE,SNTP_SERVER);
+#else
+  sprintf(cmd,"AT+CIPSNTPCFG=1,%d",TIME_ZONE);
+#endif
   sendCommand(cmd);
-  if (!waitForString("OK", 2, 1000)) {
-    errorDisplay("AT+CIPSERVER Fail");
+  if (!waitForString("OK", 2, 5000)) {
+    Serial.println("Check your AT-Firmware SDK Version");
+    Serial.println("It's required AT Version 1.5.0 or later");
+    errorDisplay("AT+CIPSNTPCFG Fail");
   }
   clearBuffer();
 
-  Serial.println("Start TCP/IP Server [" + String(_MODEL_) + "] wait for " + String(MY_PORT) + " Port");
+  Serial.println("Start SNTP Client [" + String(_MODEL_) + "]");
+  lastSendPacketTime = millis();
 }
 
-void loop(void) {
-  char smsg[64];
-  char rmsg[64];
-  int rlen;
-  int id;
+void loop(){
+  static int counter=0;
+  char buf[128];
 
-  //Wait from client connection
-  id = waitConnect(1, 10000);
-  if (_DEBUG_) {
-    Serial.print("Connect id=");
-    Serial.println(id);
-  }
-  if (id >= 0) {
-    //Receive data
-    rlen = readResponse(id, rmsg, sizeof(rmsg), 5000);
-    clearBuffer();
-    Serial.write((uint8_t *)rmsg,rlen);
-    Serial.print("----->");
-    memset (smsg,0,sizeof(smsg));
-    for (int i=0; i< rlen; i++) {
-      if(isalpha(rmsg[i])) {
-        smsg[i] = toupper(rmsg[i]);
-      } else {
-        smsg[i] = rmsg[i];
-      }
+  long now = millis();
+  if (now - lastSendPacketTime > 1000) { // One second has elapsed
+    lastSendPacketTime = now;
+    counter++;
+    if ( (counter % 10) == 0) {
+      Serial.print("+");
+    } else {
+      Serial.print(".");
     }
-    Serial.write((uint8_t *)smsg,rlen);
-    Serial.println();
-
-    //Send response
-    int ret = sendData(id, smsg, rlen, "", 0);
-    if (ret) {
-       errorDisplay("sendData Fail");
+    if (counter == INTERVAL) {
+      if (getSNTPtime(buf, 128, 5000)) {
+        Serial.println("\nSNTP response is [" + String(buf) + "]");
+      }
+      counter = 0;
     }
     
-    //Wait from client disconnection
-    while(1) {
-      id = waitConnect(2, 10000);
-      if (_DEBUG_) {
-        Serial.print("Close id=");
-        Serial.println(id);
-      }
-      if (id >= 0) break;
-    }
-  
-  }
+  } // endif
+
 }
+
