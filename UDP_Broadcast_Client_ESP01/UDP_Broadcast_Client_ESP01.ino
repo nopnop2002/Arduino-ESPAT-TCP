@@ -128,7 +128,7 @@ void setup(void)
   }
   clearBuffer();
 
-  Serial.println("Start NTP Client [" + String(_MODEL_) + "] via ESP8266");
+  Serial.println("Start UDP Broadcast Client [" + String(_MODEL_) + "] via ESP8266");
 
   lastSendPacketTime = millis();
 }
@@ -150,6 +150,7 @@ void loop(void) {
     if (counter == INTERVAL) {
       //Send Data
       sprintf(buff,"Broadcast from %s",_MODEL_);
+      Serial.println("Sent Broadcast message");
       int ret = sendData(LINK_ID, buff, strlen(buff), "", 0);
       if (ret) {
         errorDisplay("sendData Fail");
