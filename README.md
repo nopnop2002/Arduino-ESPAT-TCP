@@ -5,24 +5,24 @@ You need only ESP8266 module.
 
 **MQTT_Publish_ESP01**   
 Simple Pubish Application.   
-Supprted UNO/MEGA/stm32.   
+Supprted UNO/MEGA/STM32.   
 It DON'T require any library.   
 
 **MQTT_Subscribe_ESP01**   
 Simple Subscribe Application.   
-Supprted UNO/MEGA/stm32.   
+Supprted UNO/MEGA/STM32.   
 It DON'T require any library.   
 
 ![slide1](https://user-images.githubusercontent.com/6020549/35101108-a13451d8-fca1-11e7-8cfd-37d71f18f880.JPG)
 
 **Socket_Client_ESP01**   
 Simple TCP/IP Client Application.   
-Supprted UNO/MEGA/stm32.   
+Supprted UNO/MEGA/STM32.   
 It DON'T require any library.   
 
 **Socket_Server_ESP01**   
 Simple TCP/IP Server Application.   
-Supprted UNO/MEGA/stm32.   
+Supprted UNO/MEGA/STM32.   
 It DON'T require any library.   
 
 **Socket_Client_WiFiEsp**   
@@ -41,19 +41,19 @@ https://github.com/bportaluri/WiFiEsp
 
 **NTP_Client_ESP01**   
 Simple NTP Client Application.   
-Supprted UNO/MEGA/stm32.   
+Supprted UNO/MEGA/STM32.   
 It DON'T require any library.   
 
 **SNTP_Client_ESP01**   
 Simple SNTP Client Application.   
-Supprted UNO/MEGA/stm32.   
+Supprted UNO/MEGA/STM32.   
 It DON'T require any library.   
 
 ![slide3](https://user-images.githubusercontent.com/6020549/35101499-241b1950-fca3-11e7-9876-0a22008ebc5a.JPG)
 
 **SMTP_Client_gmail_ESP01**   
 Simple SMTP Client Application.   
-Supprted UNO/MEGA/stm32.   
+Supprted UNO/MEGA/STM32.   
 It DON'T require any library.   
 You need gmail account.   
 
