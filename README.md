@@ -72,6 +72,8 @@ I'm using esp8266_flasher.exe and v2.0 AT Firmware(ESP).bin.
 
 ![esp01-setup](https://user-images.githubusercontent.com/6020549/33159150-bdade984-d053-11e7-9b93-bbbf05573441.jpg)
 
+Connect to ESP-01 with 115200 bps.   
+
     AT+GMR
     AT version:0.40.0.0(Aug  8 2015 14:45:58)
     SDK version:1.3.0
@@ -116,6 +118,7 @@ _*** So UNO use Software Serial with low speed ***_
 
     AT+UART_DEF=4800,8,1,0,0
 
+Re-Connect to ESP-01 with 4800 bps.   
 
 ----
 
