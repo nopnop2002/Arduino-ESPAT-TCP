@@ -5,35 +5,35 @@ You need only ESP8266 module.
 
 **MQTT_Publish_ESP01**   
 Simple Pubish Application.   
-Supprted arduino & stm32f103.   
+Supprted UNO/MEGA/stm32.   
 It DON'T require any library.   
 
 **MQTT_Subscribe_ESP01**   
 Simple Subscribe Application.   
-Supprted arduino & stm32f103.   
+Supprted UNO/MEGA/stm32.   
 It DON'T require any library.   
 
 ![slide1](https://user-images.githubusercontent.com/6020549/35101108-a13451d8-fca1-11e7-8cfd-37d71f18f880.JPG)
 
 **Socket_Client_ESP01**   
 Simple TCP/IP Client Application.   
-Supprted arduino & stm32f103.   
+Supprted UNO/MEGA/stm32.   
 It DON'T require any library.   
 
 **Socket_Server_ESP01**   
 Simple TCP/IP Server Application.   
-Supprted arduino & stm32f103.   
+Supprted UNO/MEGA/stm32.   
 It DON'T require any library.   
 
 **Socket_Client_WiFiEsp**   
 Simple TCP/IP Client Application using WiFiEsp.   
-Supprted arduino ONLY.   
+Supprted UNO/MEGA.   
 It require Arduino WiFi library for ESP8266 modules.   
 https://github.com/bportaluri/WiFiEsp   
 
 **Socket_Server_WiFiEsp**   
 Simple TCP/IP Server Application using WiFiEsp.   
-Supprted arduino ONLY.   
+Supprted UNO/MEGA.   
 It require Arduino WiFi library for ESP8266 modules.   
 https://github.com/bportaluri/WiFiEsp   
 
@@ -41,19 +41,19 @@ https://github.com/bportaluri/WiFiEsp
 
 **NTP_Client_ESP01**   
 Simple NTP Client Application.   
-Supprted arduino & stm32f103.   
+Supprted UNO/MEGA/stm32.   
 It DON'T require any library.   
 
 **SNTP_Client_ESP01**   
 Simple SNTP Client Application.   
-Supprted arduino & stm32f103.   
+Supprted UNO/MEGA/stm32.   
 It DON'T require any library.   
 
 ![slide3](https://user-images.githubusercontent.com/6020549/35101499-241b1950-fca3-11e7-9876-0a22008ebc5a.JPG)
 
 **SMTP_Client_gmail_ESP01**   
 Simple SMTP Client Application.   
-Supprted arduino & stm32f103.   
+Supprted UNO/MEGA/stm32.   
 It DON'T require any library.   
 You need gmail account.   
 
@@ -156,7 +156,7 @@ An electric current is insufficient.
 
 ----
 
-# Connect ESP-01 to STM32F101(MAPLE Core).
+# Connect ESP-01 to STM32F103(MAPLE Core).
 
 ESP-01(Tx) - STM32F103(PA3)   
 ESP-01(Rx) - STM32F103(PA2)   
@@ -168,7 +168,7 @@ https://github.com/rogerclarkmelbourne/Arduino_STM32
 
 ----
 
-# Connect ESP-01 to STM32F101(ST Core).
+# Connect ESP-01 to STM32F103(ST Core).
 
 ESP-01(Tx) - STM32F103(PA10)   
 ESP-01(Rx) - STM32F103(PA9)   
