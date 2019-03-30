@@ -1,6 +1,6 @@
 # MQTT_via_ESP01   
-TCP/UDP Applicaton for ATmega & STM32F103 using ESP8266's AT firmware.   
-You don't need An Ethernet card.   
+TCP/UDP Applicaton for UNO/MEGA/STM32 using ESP8266's AT firmware.   
+You don't need Ethernet card.   
 You need only ESP8266 module.   
 
 **MQTT_Publish_ESP01**   
