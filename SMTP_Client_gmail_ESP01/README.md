@@ -8,4 +8,4 @@ For example when your mail address is "aaa@gmail.com", enter "aaa@gmail.com" and
 "YWFhQGdtYWlsLmNvbQ==" is shown to a lower.   
 You use this as a mail address.   
 
-About a password, you can change by the same procedure.   
+About a password, you can convert by the same procedure.   
