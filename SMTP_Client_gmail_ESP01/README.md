@@ -4,9 +4,8 @@ You can convert your mail address of gmail and a password to a character string 
 
 https://www.base64encode.org/
 
-For example when your mail address is "aaa@gmail.com",
-"aaa@gmail.com" is designated and a ENCODE button is pressed.
-When a ENCODE button is pressed, "YWFhQGdtYWlsLmNvbQ==" is shown to a lower.
+For example when your mail address is "aaa@gmail.com", enter "aaa@gmail.com" and a ENCODE button is pressed.    
+When a ENCODE button is pressed, "YWFhQGdtYWlsLmNvbQ==" is shown to a lower.   
 This use as a mail address.   
 
-About a password, you can change by the same procedure.
+About a password, you can change by the same procedure.   
