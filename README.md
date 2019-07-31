@@ -184,7 +184,7 @@ ESP-01(Rx) - STM32F103(PA2)
 ESP-01(Tx) - STM32F103(PA3)   
 ESP-01(Rx) - STM32F103(PA2)   
 
-![ESP01-MQTT-MAPLEMINI_STM32F103_ST-Core](https://user-images.githubusercontent.com/6020549/62212683-3aab6980-b3dc-11e9-9a53-3521c3d52230.jpg)
+![ESP01-MQTT-MAPLEMINI_STM32F103_ST-Core](https://user-images.githubusercontent.com/6020549/62213727-88c16c80-b3de-11e9-9f10-54a274908c4c.jpg)
 
 ----
 
