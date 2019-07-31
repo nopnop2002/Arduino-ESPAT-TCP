@@ -3,9 +3,9 @@ TCP/UDP Applicaton for UNO/MEGA/STM32 using ESP8266's AT firmware.
 You don't need Ethernet card.   
 You need only ESP8266 module.   
 
-You can save flash & SRAM.   
+__You can save flash & SRAM__   
 
-__UNO+ENC28J60+UIPEthernet+PubSubClient__
+_UNO+ENC28J60+UIPEthernet+PubSubClient_
 
 ```
 Sketch uses 25090 bytes (77%) of program storage space. Maximum is 32256 bytes.
@@ -13,20 +13,19 @@ Global variables use 1736 bytes (84%) of dynamic memory, leaving 312 bytes for l
 Low memory available, stability problems may occur.
 ```
 
-__UNO+W5100+Ethernet+PubSubClient__
+_UNO+W5100+Ethernet+PubSubClient_
 
 ```
 Sketch uses 19582 bytes (60%) of program storage space. Maximum is 32256 bytes.
 Global variables use 1101 bytes (53%) of dynamic memory, leaving 947 bytes for local variables. Maximum is 2048 bytes.
 ```
 
-__UNO+Software Serial+ESP-01+AT Firmware__
+_UNO+Software Serial+ESP-01+AT Firmware_
 
 ```
 Sketch uses 9938 bytes (30%) of program storage space. Maximum is 32256 bytes.
 Global variables use 897 bytes (43%) of dynamic memory, leaving 1151 bytes for local variables. Maximum is 2048 bytes.
 ```
-
 
 ---
 
