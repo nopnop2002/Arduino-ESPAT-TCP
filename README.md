@@ -158,7 +158,7 @@ https://github.com/rogerclarkmelbourne/Arduino_STM32
 
 ----
 
-# Connect ESP-01 to STM32 NUCLE(ST Core).
+# Connect ESP-01 to STM32 NUCLEO(ST Core).
 
 ESP-01(Tx) - STM32F103(PA10)   
 ESP-01(Rx) - STM32F103(PA9)   
