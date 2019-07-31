@@ -1,58 +1,71 @@
 /*
-   Simple TCP/IP Client using ESP8266 AT Instruction Set
+ * Simple TCP/IP Client using ESP8266 AT Instruction Set
+ *
+ * for ATmega328
+ * ESP8266----------ATmega328
+ * TX     ----------RX(D4)
+ * RX     ----------TX(D5)
+ * 
+ * for ATmega2560
+ * ESP8266----------ATmega2560
+ * TX     ----------RX(D19)
+ * RX     ----------TX(D18)
+ * 
+ * for STM32F103 MAPLE Core
+ * ESP8266----------STM32F103
+ * TX     ----------RX(PA3)
+ * RX     ----------TX(PA2)
+ * 
+ * for STM32 BLUEPILL/BLACKPILL/MAPLEMINI ST Core
+ * ESP8266----------STM32F103
+ * TX     ----------RX(PA3)
+ * RX     ----------TX(PA2)
+ * 
+ * for STM32 NUCLEO64 ST Core
+ * ESP8266----------STM32F103
+ * TX     ----------RX(PA10)
+ * RX     ----------TX(PA9)
+ * 
+ */
 
-   for ATmega328
-   ESP8266----------ATmega328
-   TX     ----------RX(D4)
-   RX     ----------TX(D5)
-
-   for ATmega2560
-   ESP8266----------ATmega2560
-   TX     ----------RX(D19)
-   RX     ----------TX(D18)
-
-   for STM32F103 MAPLE Core
-   ESP8266----------STM32F103
-   TX     ----------RX(PA3)
-   RX     ----------TX(PA2)
-
-   for STM32F103 ST Core
-   ESP8266----------STM32F103
-   TX     ----------RX(PA10)
-   RX     ----------TX(PA9)
-
-*/
 
 #include "espLib.h"
 
 //for Arduino UNO(ATmega328)
 #if defined(__AVR_ATmega328__)  || defined(__AVR_ATmega328P__)
 #include <SoftwareSerial.h>
-#define rxPin    4    // D4
-#define txPin    5    // D5
-SoftwareSerial Serial2(rxPin, txPin); // RX, TX
-#define _BAUDRATE_ 4800
-#define _SERIAL_   Serial2
-#define _MODEL_    "ATmega328"
+#define SERIAL_RX       4
+#define SERIAL_TX       5
+SoftwareSerial Serial2(SERIAL_RX, SERIAL_TX); // RX, 
+#define _BAUDRATE_      4800
+#define _SERIAL_        Serial2
+#define _MODEL_         "ATmega328"
 
 //for Arduino MEGA(ATmega2560)
 #elif defined(__AVR_ATmega2560__)
-#define _BAUDRATE_ 115200
-#define _SERIAL_   Serial1
-#define _MODEL_    "ATmega2560"
+#define _BAUDRATE_      115200
+#define _SERIAL_        Serial1
+#define _MODEL_         "ATmega2560"
 
 //for STM32F103(MAPLE Core)
 #elif defined(__STM32F1__)
-#define _BAUDRATE_ 115200
-#define _SERIAL_   Serial2
-#define _MODEL_    "STM32F103 MAPLE Core"
+#define _BAUDRATE_      115200
+#define _SERIAL_        Serial2
+#define _MODEL_         "STM32F103 MAPLE Core"
 
 //for STM32F103(ST Core)
+#elif defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_MAPLEMINI_F103CB)
+HardwareSerial Serial2(PA3, PA2);
+#define _BAUDRATE_      115200
+#define _SERIAL_        Serial2
+#define _MODEL_         "STM32F103 ST Core"
+
+//for STM32 NUCLEO64(ST Core)
 #else
 HardwareSerial Serial1(PA10, PA9);
-#define _BAUDRATE_ 115200
-#define _SERIAL_   Serial1
-#define _MODEL_    "STM32F103 ST Core"
+#define _BAUDRATE_      115200
+#define _SERIAL_        Serial1
+#define _MODEL_         "STM32 NUCLEO64 ST Core"
 #endif
 
 #define SERVER          "192.168.10.190"       // Server IP

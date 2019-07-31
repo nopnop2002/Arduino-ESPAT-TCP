@@ -16,7 +16,12 @@
  * TX     ----------RX(PA3)
  * RX     ----------TX(PA2)
  * 
- * for STM32F103 ST Core
+ * for STM32 BLUEPILL/BLACKPILL/MAPLEMINI ST Core
+ * ESP8266----------STM32F103
+ * TX     ----------RX(PA3)
+ * RX     ----------TX(PA2)
+ * 
+ * for STM32 NUCLEO64 ST Core
  * ESP8266----------STM32F103
  * TX     ----------RX(PA10)
  * RX     ----------TX(PA9)
@@ -54,13 +59,22 @@ SoftwareSerial Serial2(SERIAL_RX, SERIAL_TX); // RX, TX
 #define _MODEL_         "STM32F103 MAPLE Core"
 
 //for STM32F103(ST Core)
+#elif defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_MAPLEMINI_F103CB)
+HardwareSerial Serial2(PA3, PA2);
+#define STOP_BUTTON     PB11 // 0: Disable STOP_BUTTON
+#define RUNNING_LED     PB10 // 0: Disable RUNNING_LED
+#define _BAUDRATE_      115200
+#define _SERIAL_        Serial2
+#define _MODEL_         "STM32F103 ST Core"
+
+//for STM32 NUCLEO64(ST Core)
 #else
 HardwareSerial Serial1(PA10, PA9);
 #define STOP_BUTTON     PB2 // 0: Disable STOP_BUTTON
 #define RUNNING_LED     PB1 // 0: Disable RUNNING_LED
 #define _BAUDRATE_      115200
 #define _SERIAL_        Serial1
-#define _MODEL_         "STM32F103 ST Core"
+#define _MODEL_         "STM32 NUCLEO64 ST Core"
 #endif
 
 #define MQTT_SERVER     "192.168.10.40"

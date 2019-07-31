@@ -158,7 +158,7 @@ https://github.com/rogerclarkmelbourne/Arduino_STM32
 
 ----
 
-# Connect ESP-01 to STM32F103(ST Core).
+# Connect ESP-01 to STM32 NUCLE(ST Core).
 
 ESP-01(Tx) - STM32F103(PA10)   
 ESP-01(Rx) - STM32F103(PA9)   
@@ -167,6 +167,24 @@ ESP-01(Rx) - STM32F103(PA9)
 
 ST Core.    
 https://github.com/stm32duino/Arduino_Core_STM32   
+
+----
+
+# Connect ESP-01 to STM32 BluePill(ST Core).
+
+ESP-01(Tx) - STM32F103(PA3)   
+ESP-01(Rx) - STM32F103(PA2)   
+
+![ESP01-MQTT-BLUEPILL_STM32F103_ST-Core](https://user-images.githubusercontent.com/6020549/62212468-c1ac1200-b3db-11e9-9fa2-9460d29b46cb.jpg)
+
+----
+
+# Connect ESP-01 to STM32 MapleMini(ST Core).
+
+ESP-01(Tx) - STM32F103(PA3)   
+ESP-01(Rx) - STM32F103(PA2)   
+
+![ESP01-MQTT-MAPLEMINI_STM32F103_ST-Core](https://user-images.githubusercontent.com/6020549/62212683-3aab6980-b3dc-11e9-9a53-3521c3d52230.jpg)
 
 ----
 
