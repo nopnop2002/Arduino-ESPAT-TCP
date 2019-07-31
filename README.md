@@ -20,7 +20,7 @@ Sketch uses 19582 bytes (60%) of program storage space. Maximum is 32256 bytes.
 Global variables use 1101 bytes (53%) of dynamic memory, leaving 947 bytes for local variables. Maximum is 2048 bytes.
 ```
 
-_UNO+Software Serial+ESP-01+AT Firmware_
+_UNO+ESP01+Software Serial_
 
 ```
 Sketch uses 9938 bytes (30%) of program storage space. Maximum is 32256 bytes.
