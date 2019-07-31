@@ -21,6 +21,11 @@
  * TX     ----------RX(PA3)
  * RX     ----------TX(PA2)
  * 
+ * for STM32 F4DISC1 ST Core
+ * ESP8266----------STM32F103
+ * TX     ----------RX(PD9)
+ * RX     ----------TX(PD8) 
+ *  
  * for STM32 NUCLEO64 ST Core
  * ESP8266----------STM32F103
  * TX     ----------RX(PA10)
@@ -66,6 +71,15 @@ HardwareSerial Serial2(PA3, PA2);
 #define _BAUDRATE_      115200
 #define _SERIAL_        Serial2
 #define _MODEL_         "STM32F103 ST Core"
+
+//for STM32F4DISC1(ST Core)
+#elif defined(ARDUINO_DISCO_F407VG)
+HardwareSerial Serial3(PD9, PD8);
+#define STOP_BUTTON     PB11 // 0: Disable STOP_BUTTON
+#define RUNNING_LED     PB10 // 0: Disable RUNNING_LED
+#define _BAUDRATE_      115200
+#define _SERIAL_        Serial3
+#define _MODEL_         "STM32 F4DISC1 ST Core"
 
 //for STM32 NUCLEO64(ST Core)
 #else

@@ -188,6 +188,15 @@ ESP-01(Rx) - STM32F103(PA2)
 
 ----
 
+# Connect ESP-01 to STM32 F4DISC1(ST Core).
+
+ESP-01(Tx) - STM32F4DISC1(PD9)   
+ESP-01(Rx) - STM32F4DISC1(PD8)   
+
+I want to Fritzing Part of F4DISC.   
+
+----
+
 # How to Firmware Upate
 
 1.Make sure TE(terminal equipment) is in sta or sta+ap mode   
