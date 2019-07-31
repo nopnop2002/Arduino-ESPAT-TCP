@@ -177,6 +177,8 @@ ESP-01(Rx) - STM32F103(PA2)
 
 ![ESP01-MQTT-BLUEPILL_STM32F103_ST-Core](https://user-images.githubusercontent.com/6020549/62212468-c1ac1200-b3db-11e9-9fa2-9460d29b46cb.jpg)
 
+Serial printing goes to PA9.   
+
 ----
 
 # Connect ESP-01 to STM32 MapleMini(ST Core).
@@ -186,6 +188,8 @@ ESP-01(Rx) - STM32F103(PA2)
 
 ![ESP01-MQTT-MAPLEMINI_STM32F103_ST-Core](https://user-images.githubusercontent.com/6020549/62213727-88c16c80-b3de-11e9-9f10-54a274908c4c.jpg)
 
+Serial printing goes to PA9.   
+
 ----
 
 # Connect ESP-01 to STM32 F4DISC1(ST Core).
@@ -193,7 +197,8 @@ ESP-01(Rx) - STM32F103(PA2)
 ESP-01(Tx) - STM32F4DISC1(PD9)   
 ESP-01(Rx) - STM32F4DISC1(PD8)   
 
-I want to Fritzing Part of F4DISC.   
+I want to Fritzing Part of this board.   
+Serial printing goes to PA2.   
 
 ----
 
