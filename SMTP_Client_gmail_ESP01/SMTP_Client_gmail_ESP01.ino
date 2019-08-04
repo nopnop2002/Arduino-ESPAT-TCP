@@ -26,6 +26,11 @@
  * TX     ----------RX(PD9)
  * RX     ----------TX(PD8)  
  *  
+ * for STM32 DIYMROE_F407VGT/BLACK_F407VE/BLACK_F407VG ST Core
+ * ESP8266----------STM32F103
+ * TX     ----------RX(PA3)
+ * RX     ----------TX(PA2)
+ *  
  * for STM32 NUCLEO64 ST Core
  * ESP8266----------STM32F103
  * TX     ----------RX(PA10)
@@ -58,7 +63,7 @@ SoftwareSerial Serial2(SERIAL_RX, SERIAL_TX); // RX,
 #define _MODEL_         "STM32F103 MAPLE Core"
 
 //for STM32F103(ST Core)
-#elif defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_MAPLEMINI_F103CB)
+#elif defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_BLACKPILL_F103C8) || defined(ARDUINO_MAPLEMINI_F103CB)
 HardwareSerial Serial2(PA3, PA2);
 #define _BAUDRATE_      115200
 #define _SERIAL_        Serial2
@@ -70,6 +75,13 @@ HardwareSerial Serial3(PD9, PD8);
 #define _BAUDRATE_      115200
 #define _SERIAL_        Serial3
 #define _MODEL_         "STM32 F4DISC1 ST Core"
+
+//for STM32F407(ST Core)
+#elif defined(ARDUINO_DIYMROE_F407VGT) || defined(ARDUINO_BLACK_F407VE) || defined(ARDUINO_BLACK_F407VG)
+HardwareSerial Serial2(PA3, PA2);
+#define _BAUDRATE_      115200
+#define _SERIAL_        Serial2
+#define _MODEL_         "STM32F407 ST Core"
 
 //for STM32 NUCLEO64(ST Core)
 #else

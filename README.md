@@ -228,6 +228,15 @@ Serial printing goes to PA2.
 
 ----
 
+# Connect ESP-01 to STM32 F407 development board that like DIYMROE_F407VGT.
+
+ESP-01(Tx) - STM32F103(PA3)   
+ESP-01(Rx) - STM32F103(PA2)   
+
+Serial printing goes to PA9.   
+
+----
+
 # How to Firmware Upate
 
 1.Make sure TE(terminal equipment) is in sta or sta+ap mode   
