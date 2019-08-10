@@ -11,13 +11,18 @@
  * TX     ----------RX(D19)
  * RX     ----------TX(D18)
  * 
- * for STM32F103 MAPLE Core
+ * for STM32 F103 MAPLE Core
  * ESP8266----------STM32F103
  * TX     ----------RX(PA3)
  * RX     ----------TX(PA2)
  * 
- * for STM32 BLUEPILL/BLACKPILL/MAPLEMINI ST Core
- * ESP8266----------STM32F103
+ * for STM32 F103 BLUEPILL/BLACKPILL/MAPLEMINI ST Core
+ * ESP8266----------STM32
+ * TX     ----------RX(PA3)
+ * RX     ----------TX(PA2)
+ * 
+ * for STM32 F303 BLACKPILL ST Core
+ * ESP8266----------STM32
  * TX     ----------RX(PA3)
  * RX     ----------TX(PA2)
  * 
@@ -68,6 +73,13 @@ HardwareSerial Serial2(PA3, PA2);
 #define _BAUDRATE_      115200
 #define _SERIAL_        Serial2
 #define _MODEL_         "STM32F103 ST Core"
+
+//for STM32F303(ST Core)
+#elif defined(ARDUINO_BLACKPILL_F303CC)
+HardwareSerial Serial2(PA3, PA2);
+#define _BAUDRATE_      115200
+#define _SERIAL_        Serial2
+#define _MODEL_         "STM32F303 ST Core"
 
 //for STM32F4DISC1(ST Core)
 #elif defined(ARDUINO_DISCO_F407VG)

@@ -11,28 +11,33 @@
  * TX     ----------RX(D19)
  * RX     ----------TX(D18)
  * 
- * for STM32F103 MAPLE Core
- * ESP8266----------STM32F103
+ * for STM32 F103 MAPLE Core
+ * ESP8266----------STM32
  * TX     ----------RX(PA3)
  * RX     ----------TX(PA2)
  * 
- * for STM32 BLUEPILL/BLACKPILL/MAPLEMINI ST Core
- * ESP8266----------STM32F103
+ * for STM32 F103 BLUEPILL/BLACKPILL/MAPLEMINI ST Core
+ * ESP8266----------STM32
+ * TX     ----------RX(PA3)
+ * RX     ----------TX(PA2)
+ * 
+ * for STM32 F303 BLACKPILL ST Core
+ * ESP8266----------STM32
  * TX     ----------RX(PA3)
  * RX     ----------TX(PA2)
  * 
  * for STM32 F4DISC1 ST Core
- * ESP8266----------STM32F103
+ * ESP8266----------STM32
  * TX     ----------RX(PD9)
  * RX     ----------TX(PD8) 
  *  
  * for STM32 DIYMROE_F407VGT/BLACK_F407VE/BLACK_F407VG ST Core
- * ESP8266----------STM32F103
+ * ESP8266----------STM32
  * TX     ----------RX(PA3)
  * RX     ----------TX(PA2)
  *  
  * for STM32 NUCLEO64 ST Core
- * ESP8266----------STM32F103
+ * ESP8266----------STM32
  * TX     ----------RX(PA10)
  * RX     ----------TX(PA9)
  * 
@@ -77,6 +82,15 @@ HardwareSerial Serial2(PA3, PA2);
 #define _SERIAL_        Serial2
 #define _MODEL_         "STM32F103 ST Core"
 
+//for STM32F303(ST Core)
+#elif defined(ARDUINO_BLACKPILL_F303CC)
+HardwareSerial Serial2(PA3, PA2);
+#define STOP_BUTTON     PB11 // 0: Disable STOP_BUTTON
+#define RUNNING_LED     PB10 // 0: Disable RUNNING_LED
+#define _BAUDRATE_      115200
+#define _SERIAL_        Serial2
+#define _MODEL_         "STM32F303 ST Core"
+
 //for STM32F4DISC1(ST Core)
 #elif defined(ARDUINO_DISCO_F407VG)
 HardwareSerial Serial3(PD9, PD8);
@@ -109,11 +123,11 @@ HardwareSerial Serial1(PA10, PA9);
 //#define MQTT_SERVER     "broker.hivemq.com"
 //#define MQTT_SERVER     "iot.eclipse.org"
 #define MQTT_PORT       1883
-#define SUB_TOPIC       "ESP-AT-MQTT/#"        // You can change
+#define SUB_TOPIC       "#"        // You can change
 #define MQTT_KEEP_ALIVE 60
 #define MAX_TOPIC       64
 #define MAX_PAYLOAD     64
-#define _DEBUG_         0                      // for Debug
+#define _DEBUG_         0          // for Debug
 
 // Last Packet Send Time (MilliSecond)
 unsigned long lastSendPacketTime = 0;

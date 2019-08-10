@@ -218,6 +218,15 @@ Serial printing goes to PA9.
 
 ----
 
+# Connect ESP-01 to STM32 F303 BlackPill(ST Core).
+
+ESP-01(Tx) - STM32F303(PA3)   
+ESP-01(Rx) - STM32F303(PA2)   
+
+Serial printing goes to PA9.   
+
+----
+
 # Connect ESP-01 to STM32 F4DISC1(ST Core).
 
 ESP-01(Tx) - STM32F4DISC1(PD9)   
