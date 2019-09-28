@@ -16,7 +16,7 @@
  * TX     ----------RX(PA3)
  * RX     ----------TX(PA2)
  * 
- * for STM32 F103 BLUEPILL/BLACKPILL/MAPLEMINI ST Core
+ * for STM32 F103 ST Core
  * ESP8266----------STM32
  * TX     ----------RX(PA3)
  * RX     ----------TX(PA2)
@@ -26,12 +26,17 @@
  * TX     ----------RX(PA3)
  * RX     ----------TX(PA2)
  * 
+ * for STM32 F401 BLACKPILL ST Core
+ * ESP8266----------STM32
+ * TX     ----------RX(PA3)
+ * RX     ----------TX(PA2)
+ * 
  * for STM32 F4DISC1 ST Core
  * ESP8266----------STM32
  * TX     ----------RX(PD9)
  * RX     ----------TX(PD8)  
  *  
- * for STM32 DIYMROE_F407VGT/BLACK_F407VE/BLACK_F407VG ST Core
+ * for STM32 F407VE/F407VG ST Core
  * ESP8266----------STM32
  * TX     ----------RX(PA3)
  * RX     ----------TX(PA2)
@@ -82,6 +87,13 @@ HardwareSerial Serial2(PA3, PA2);
 #define _SERIAL_        Serial2
 #define _MODEL_         "STM32F303 ST Core"
 
+//for STM32F401(ST Core)
+#elif defined(ARDUINO_BLACKPILL_F401CC)
+HardwareSerial Serial2(PA3, PA2);
+#define _BAUDRATE_      115200
+#define _SERIAL_        Serial2
+#define _MODEL_         "STM32F401 ST Core"
+
 //for STM32F4DISC1(ST Core)
 #elif defined(ARDUINO_DISCO_F407VG)
 HardwareSerial Serial3(PD9, PD8);
@@ -90,7 +102,7 @@ HardwareSerial Serial3(PD9, PD8);
 #define _MODEL_         "STM32 F4DISC1 ST Core"
 
 //for STM32F407(ST Core)
-#elif defined(ARDUINO_DIYMROE_F407VGT) || defined(ARDUINO_BLACK_F407VE) || defined(ARDUINO_BLACK_F407VG)
+#elif defined(ARDUINO_DIYMORE_F407VGT) || defined(ARDUINO_BLACK_F407VE) || defined(ARDUINO_BLACK_F407VG)
 HardwareSerial Serial2(PA3, PA2);
 #define _BAUDRATE_      115200
 #define _SERIAL_        Serial2
@@ -104,7 +116,7 @@ HardwareSerial Serial1(PA10, PA9);
 #define _MODEL_         "STM32 NUCLEO64 ST Core"
 #endif
 
-#define SERVER          "192.168.10.190"       // Server IP
+#define SERVER          "192.168.10.10"        // Server IP
 #define PORT            9876                   // Server port
 #define INTERVAL        5000                   // Interval of Packet Send(Second)
 

@@ -16,7 +16,7 @@
  * TX     ----------RX(PA3)
  * RX     ----------TX(PA2)
  * 
- * for STM32 F103 BLUEPILL/BLACKPILL/MAPLEMINI ST Core
+ * for STM32 F103 ST Core
  * ESP8266----------STM32
  * TX     ----------RX(PA3)
  * RX     ----------TX(PA2)
@@ -26,12 +26,17 @@
  * TX     ----------RX(PA3)
  * RX     ----------TX(PA2)
  * 
+ * for STM32 F401 BLACKPILL ST Core
+ * ESP8266----------STM32
+ * TX     ----------RX(PA3)
+ * RX     ----------TX(PA2)
+ * 
  * for STM32 F4DISC1 ST Core
  * ESP8266----------STM32
  * TX     ----------RX(PD9)
  * RX     ----------TX(PD8)
  * 
- * for STM32 DIYMROE_F407VGT/BLACK_F407VE/BLACK_F407VG ST Core
+ * for STM32 F407VE/F407VG ST Core
  * ESP8266----------STM32
  * TX     ----------RX(PA3)
  * RX     ----------TX(PA2)
@@ -91,6 +96,15 @@ HardwareSerial Serial2(PA3, PA2);
 #define _SERIAL_        Serial2
 #define _MODEL_         "STM32F303 ST Core"
 
+//for STM32F401(ST Core)
+#elif defined(ARDUINO_BLACKPILL_F401CC)
+HardwareSerial Serial2(PA3, PA2);
+#define STOP_BUTTON     PB13 // 0: Disable STOP_BUTTON
+#define RUNNING_LED     PB12 // 0: Disable RUNNING_LED
+#define _BAUDRATE_      115200
+#define _SERIAL_        Serial2
+#define _MODEL_         "STM32F401 ST Core"
+
 //for STM32F4DISC1(ST Core)
 #elif defined(ARDUINO_DISCO_F407VG)
 HardwareSerial Serial3(PD9, PD8);
@@ -101,7 +115,7 @@ HardwareSerial Serial3(PD9, PD8);
 #define _MODEL_         "STM32 F4DISC1 ST Core"
 
 //for STM32F407(ST Core)
-#elif defined(ARDUINO_DIYMROE_F407VGT) || defined(ARDUINO_BLACK_F407VE) || defined(ARDUINO_BLACK_F407VG)
+#elif defined(ARDUINO_DIYMORE_F407VGT) || defined(ARDUINO_BLACK_F407VE) || defined(ARDUINO_BLACK_F407VG)
 HardwareSerial Serial2(PA3, PA2);
 #define STOP_BUTTON     PB11 // 0: Disable STOP_BUTTON
 #define RUNNING_LED     PB10 // 0: Disable RUNNING_LED
@@ -120,8 +134,8 @@ HardwareSerial Serial1(PA10, PA9);
 #endif
 
 
-#define INTERVAL        100
-#define MQTT_SERVER     "192.168.10.40"
+#define INTERVAL        100                     // You can change
+#define MQTT_SERVER     "192.168.10.40"         // You can change
 //#define MQTT_SERVER     "broker.hivemq.com"
 //#define MQTT_SERVER     "iot.eclipse.org"
 #define MQTT_PORT       1883
@@ -223,7 +237,9 @@ void mqttPingreq() {
 #endif
   getResponse(1000);
   //ATmegaではlong=int*1000はマイナスになる
+  //In ATmega, long = int * 1000 becomes negative
   //long=long(int)*1000は正しい値になる
+  //long = long (int) * 1000 is the correct value
   lastKeepAlive = now + long(MQTT_KEEP_ALIVE) * 1000;
   if (lastKeepAlive < 0) lastKeepAlive = long(MQTT_KEEP_ALIVE) * 1000; // OverFlow
 //  Serial.print("lastKeepAlive(9)=");

@@ -68,7 +68,8 @@ https://github.com/bportaluri/WiFiEsp
 **NTP_Client_ESP01**   
 Simple NTP Client Application.   
 Supprted UNO/MEGA/STM32.   
-It DON'T require any library.   
+It require Time library for Arduino.   
+https://github.com/PaulStoffregen/Time   
 
 **SNTP_Client_ESP01**   
 Simple SNTP Client Application.   
@@ -196,7 +197,7 @@ https://github.com/stm32duino/Arduino_Core_STM32
 
 ----
 
-# Connect ESP-01 to STM32 BluePill(ST Core).
+# Connect ESP-01 to STM32 F103 BluePill(ST Core).
 
 ESP-01(Tx) - STM32F103(PA3)   
 ESP-01(Rx) - STM32F103(PA2)   
@@ -207,7 +208,7 @@ Serial printing goes to PA9.
 
 ----
 
-# Connect ESP-01 to STM32 MapleMini(ST Core).
+# Connect ESP-01 to STM32 F103 MapleMini(ST Core).
 
 ESP-01(Tx) - STM32F103(PA3)   
 ESP-01(Rx) - STM32F103(PA2)   
@@ -227,6 +228,15 @@ Serial printing goes to PA9.
 
 ----
 
+# Connect ESP-01 to STM32 F401 BlackPill(ST Core).
+
+ESP-01(Tx) - STM32F303(PA3)   
+ESP-01(Rx) - STM32F303(PA2)   
+
+Serial printing goes to PA9.   
+
+----
+
 # Connect ESP-01 to STM32 F4DISC1(ST Core).
 
 ESP-01(Tx) - STM32F4DISC1(PD9)   
@@ -237,7 +247,7 @@ Serial printing goes to PA2.
 
 ----
 
-# Connect ESP-01 to STM32 F407 development board that like DIYMROE_F407VGT.
+# Connect ESP-01 to STM32 F407 development board that like DIYMORE_F407VGT.
 
 ESP-01(Tx) - STM32F103(PA3)   
 ESP-01(Rx) - STM32F103(PA2)   
