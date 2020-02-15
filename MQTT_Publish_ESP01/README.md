@@ -1,4 +1,5 @@
-You can change these define.
+# Environment
+You need to change the following environment.
 
 - #define MQTT_SERVER     "192.168.10.40"   
 MQTT server you use   
