@@ -1,4 +1,5 @@
-You can change these define.
+# Environment
+You need to change the following environment.
 
 - #define NTP_SERVER      "ntp.jst.mfeed.ad.jp"   
 NTP server you use   
