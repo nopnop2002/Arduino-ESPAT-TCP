@@ -1,4 +1,5 @@
-You can change these define.
+# Environment
+You need to change the following environment.
 
 - #define SNTP_SERVER     "time.google.com"   
 SNTP server you use   
