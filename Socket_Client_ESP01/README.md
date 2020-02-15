@@ -1,10 +1,9 @@
-You can change these define.
+# Environment
+You need to change the following environment.
 
+- #define SERVER          "192.168.10.10"    
 Socket server you use   
-#define SERVER          "192.168.10.10" 
-
+- #define PORT            9876   
 Socket port you use   
-#define PORT            9876
-
+- #define INTERVAL        5000   
 Interval of Packet Send(Second)   
-#define INTERVAL        5000
