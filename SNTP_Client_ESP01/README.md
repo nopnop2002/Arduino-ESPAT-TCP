@@ -1,8 +1,7 @@
 You can change these define.
 
+- #define SNTP_SERVER     "time.google.com"   
 SNTP server you use   
-#define SNTP_SERVER     "time.google.com"
-
+- #define TIME_ZONE       9   
 Your local time zone   
-#define TIME_ZONE       9
 
