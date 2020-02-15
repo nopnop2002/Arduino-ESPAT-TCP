@@ -1,4 +1,5 @@
-You can change these define.
+# Environment
+You need to change the following environment.
 
 - #define SMTP_SERVER "smtp.gmail.com"   
 SMTP Server   
