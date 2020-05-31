@@ -286,7 +286,7 @@ Serial printing goes to PA9.
 
 # Use with TFT   
 UNO compatibles can have a pin header inside the pin socket.   
-The power supply and digital pins # 10 to # 13 are out.   
+If you do not use SD-CARD, you can freely use digital pins # 10 to # 13 of the TFT shield.   
 UART communication with ESP-01 uses pins # 10 and # 11.   
 
 ![ESP01-MQTT-UNO-TFT-2](https://user-images.githubusercontent.com/6020549/83363044-2277f280-a3d1-11ea-8688-76521819f1db.JPG)
