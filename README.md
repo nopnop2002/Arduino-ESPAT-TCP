@@ -296,6 +296,7 @@ Serial printing goes to PA9.
 ----
 
 # UART to WiFi module   
+We can get a module for UART communication.   
 We can write AT firmware to this.   
 ![ESP-UART-MODULE-1](https://user-images.githubusercontent.com/6020549/104827197-b504cd80-589e-11eb-95a8-f12c75670ced.JPG)
 
@@ -303,7 +304,7 @@ We can write AT firmware to this.
 
 ----
 
-# Use with TFT   
+# Use with TFT Shield   
 UNO compatibles can have a pin header inside the pin socket.   
 If you do not use SD-CARD, you can freely use digital pins # 10 to # 13 of the TFT shield.   
 These pins can be used for UART communication with the ESP-01.   
