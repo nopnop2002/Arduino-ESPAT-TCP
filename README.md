@@ -219,7 +219,7 @@ Serial printing goes to PA9.
 
 ----
 
-# Mount ESP-01 to STM32 F103 Development Board(ST Core).
+# STM32F103 development board on which ESP-01 can be mounted(ST Core).
 
 ESP-01(Tx) - STM32F103(PA3)   
 ESP-01(Rx) - STM32F103(PA2)   
