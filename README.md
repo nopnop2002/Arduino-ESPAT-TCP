@@ -304,7 +304,7 @@ We can write AT firmware to this.
 
 ----
 
-# ESP01 Adapter bpard
+# ESP01 Adapter board
 Only $1 for aliexpress/eBay.   
 It has a 5V->3.3V regulator and can supply power directly from UNO's 5V.   
 ![ESP01-Adapter-3](https://user-images.githubusercontent.com/6020549/120063987-f3a86100-c0a4-11eb-95e4-c87164812af4.JPG)
