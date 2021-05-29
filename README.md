@@ -239,10 +239,10 @@ Serial printing goes to PA9.
 
 ----
 
-# Connect ESP-01 to STM32 F401 BlackPill(ST Core).
+# Connect ESP-01 to STM32 F401/411 BlackPill(ST Core).
 
-ESP-01(Tx) - STM32F303(PA3)   
-ESP-01(Rx) - STM32F303(PA2)   
+ESP-01(Tx) - STM32F401/411(PA3)   
+ESP-01(Rx) - STM32F401/411(PA2)   
 
 Serial printing goes to PA9.   
 
@@ -260,8 +260,8 @@ Serial printing goes to PA2.
 
 # Connect ESP-01 to STM32 F407 development board that like DIYMORE F407VGT.
 
-ESP-01(Tx) - STM32F103(PA3)   
-ESP-01(Rx) - STM32F103(PA2)   
+ESP-01(Tx) - STM32F407(PA3)   
+ESP-01(Rx) - STM32F407(PA2)   
 
 https://stm32-base.org/boards/STM32F407VGT6-diymore   
 Serial printing goes to PA9.   
