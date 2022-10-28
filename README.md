@@ -270,18 +270,22 @@ Serial printing goes to PA9.
 
 # How to Firmware Upate
 
-1.Make sure TE(terminal equipment) is in sta or sta+ap mode   
+1.Make sure TE(terminal equipment) is in sta mode   
     
-    AT+CWMODE=3
+    AT+CWMODE=1
     OK
     
 2.Make sure TE got ip address   
     
     AT+CWJAP="ssid","12345678"
-    OK
+    WIFI CONNECTED
+    WIFI GOT IP
     
     AT+CIFSR
-    192.168.1.134
+    +CIFSR:APIP,"192.168.4.1"
+    +CIFSR:APMAC,"62:01:94:0e:5b:28"
+    +CIFSR:STAIP,"192.168.10.108"
+    +CIFSR:STAMAC,"60:01:94:0e:5b:28"
     
 3.Let's update   
     
