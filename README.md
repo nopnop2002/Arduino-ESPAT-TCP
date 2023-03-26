@@ -28,7 +28,8 @@ Sketch uses 9938 bytes (30%) of program storage space. Maximum is 32256 bytes.
 Global variables use 897 bytes (43%) of dynamic memory, leaving 1151 bytes for local variables. Maximum is 2048 bytes.
 ```
 
----
+# Hardware requirements   
+ESP8266 module like ESP01   
 
 **MQTT_Publish_ESP01**   
 Simple Pubish Application.   
