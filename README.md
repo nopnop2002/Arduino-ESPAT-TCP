@@ -1,8 +1,9 @@
-# MQTT_via_ESP01   
-TCP/UDP Applicaton for UNO/MEGA/STM32 using ESP8266's AT firmware.   
+# Arduino-ESPAT-TCP   
+TCP/UDP Applicaton for Arduino using ESP8266's AT firmware.   
 You don't need Ethernet card.   
 You need only ESP8266 module.   
 
+# Memory usage
 __Saves Flash and SRAM__   
 
 _UNO+ENC28J60+UIPEthernet+PubSubClient_
