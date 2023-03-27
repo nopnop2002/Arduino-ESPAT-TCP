@@ -34,8 +34,10 @@ Global variables use 897 bytes (43%) of dynamic memory, leaving 1151 bytes for l
 - ATmega328/ATmega2560/STM32
 
 # Software requirements   
-SoftwareSerial Library
+- SoftwareSerial Library
 
+- Core library is required when using STM32.   
+ It supports Maple cores and ST cores.
 
 # Applications   
 
