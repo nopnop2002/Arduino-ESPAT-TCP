@@ -29,11 +29,13 @@ Global variables use 897 bytes (43%) of dynamic memory, leaving 1151 bytes for l
 ```
 
 # Hardware requirements   
-- ESP8266 module like ESP01   
+- ESP8266 module like ESP-01   
 
 - ATmega328/ATmega2560/STM32
 
 # Software requirements   
+- Arduino Environment   
+
 - Core library is required when using STM32.   
  It supports Maple cores and ST cores.   
 
