@@ -34,8 +34,11 @@ Global variables use 897 bytes (43%) of dynamic memory, leaving 1151 bytes for l
 - ATmega328/ATmega2560/STM32
 
 # Software requirements   
-Core library is required when using STM32.   
-It supports Maple cores and ST cores.
+- Core library is required when using STM32.   
+ It supports Maple cores and ST cores.   
+
+- ESP8266 AT Firmware   
+ You can download from [here](https://github.com/espressif/ESP8266_NONOS_SDK/tags).   
 
 # Applications   
 
