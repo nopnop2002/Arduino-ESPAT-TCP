@@ -8,7 +8,7 @@ You can download from [here](http://www.espressif.com/en/support/download/other-
 - AT-Firmware   
 You can download from [here](https://github.com/espressif/ESP8266_NONOS_SDK/tags).   
 The latest firmware may not support ESP01.   
-So we write version 2.0 and do an firmware update.   
+So we flash version 2.0 and do an firmware update.   
 
 # Goto UART Download Mode   
 Connect the GPIO2 of the ESP8266 to GND to reset it.   
