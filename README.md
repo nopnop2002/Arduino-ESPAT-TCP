@@ -284,40 +284,44 @@ Serial printing goes to PA9.
 # How to Firmware Upate
 
 1.Make sure TE(terminal equipment) is in sta mode   
-    
-    AT+CWMODE=1
-    OK
-    
+```
+AT+CWMODE=1
+OK
+```
+
 2.Make sure TE got ip address   
-    
-    AT+CWJAP="ssid","12345678"
-    WIFI CONNECTED
-    WIFI GOT IP
-    
-    AT+CIFSR
-    +CIFSR:APIP,"192.168.4.1"
-    +CIFSR:APMAC,"62:01:94:0e:5b:28"
-    +CIFSR:STAIP,"192.168.10.108"
-    +CIFSR:STAMAC,"60:01:94:0e:5b:28"
-    
+```
+AT+CWJAP="ssid","12345678"
+WIFI CONNECTED
+WIFI GOT IP
+
+AT+CIFSR
++CIFSR:APIP,"192.168.4.1"
++CIFSR:APMAC,"62:01:94:0e:5b:28"
++CIFSR:STAIP,"192.168.10.108"
++CIFSR:STAMAC,"60:01:94:0e:5b:28"
+```
+
 3.Let's update   
-    
-    AT+CIUPDATE
-    +CIPUPDATE:1    found server
-    +CIPUPDATE:2    connect server
-    +CIPUPDATE:3    got edition
-    +CIPUPDATE:4    start start
-    
-    OK
+```
+AT+CIUPDATE
++CIPUPDATE:1    found server
++CIPUPDATE:2    connect server
++CIPUPDATE:3    got edition
++CIPUPDATE:4    start start
+
+OK
+```
 
 4.Check version   
-    
-    AT+GMR
-    AT version:1.7.5.0(Oct 20 2021 19:14:04)
-    SDK version:3.0.5(b29dcd3)
-    compile time:Oct 20 2021 20:13:50
-    Bin version(Wroom 02):1.7.5
-    OK
+```
+AT+GMR
+AT version:1.7.5.0(Oct 20 2021 19:14:04)
+SDK version:3.0.5(b29dcd3)
+compile time:Oct 20 2021 20:13:50
+Bin version(Wroom 02):1.7.5
+OK
+```
 
 ----
 
