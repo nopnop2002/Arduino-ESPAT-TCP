@@ -310,6 +310,15 @@ Serial printing goes to PA9.
     
     OK
 
+4.Check version   
+    
+    AT+GMR
+    AT version:1.7.5.0(Oct 20 2021 19:14:04)
+    SDK version:3.0.5(b29dcd3)
+    compile time:Oct 20 2021 20:13:50
+    Bin version(Wroom 02):1.7.5
+    OK
+
 ----
 
 # UART to WiFi module   
