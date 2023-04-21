@@ -17,4 +17,6 @@ Connect the GPIO2 of the ESP8266 to GND to reset it.
 
 # Goto Flash Boot Mode   
 Connect the GPIO2 of the ESP8266 to PullUp to reset it.   
+Open terminal software such as CoolTerm and connect to ESP8266.   
+The default baud rate is 115200bps.   
 ![FLASH_DOWNLOAD_TOOLS-6](https://user-images.githubusercontent.com/6020549/233526247-7dcd8f4c-f8fd-4e48-a8f3-8a142e85cb0d.jpg)
