@@ -311,7 +311,7 @@ AT+CIUPDATE
 OK
 ```
 
-4.Check version   
+4.Check firmware version   
 ```
 AT+GMR
 AT version:1.7.5.0(Oct 20 2021 19:14:04)
