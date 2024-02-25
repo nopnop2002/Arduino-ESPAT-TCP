@@ -41,7 +41,7 @@ Global variables use 897 bytes (43%) of dynamic memory, leaving 1151 bytes for l
 
 - ESP8266 AT Firmware   
  You can download from [here](https://github.com/espressif/ESP8266_NONOS_SDK/tags).   
- Some versions do not support ESP01.   
+ Some versions do not support 1M SoCs like ESP01.   
 
 # Applications   
 
