@@ -29,7 +29,7 @@ Global variables use 897 bytes (43%) of dynamic memory, leaving 1151 bytes for l
 ```
 
 # Hardware requirements   
-- ESP8266 module like ESP-01   
+- ESP8266 module like ESP01   
 
 - ATmega328/ATmega2560/STM32
 
