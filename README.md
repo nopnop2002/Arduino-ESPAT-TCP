@@ -104,6 +104,7 @@ Power is supplied using 5V from the UART-USB converter and 3.3V from the regulat
 GPIO2 must be pulled up.   
 GPIO0 must be connected to GND.   
 CH_PD must be pulled up.   
+RESET must be pulled up.   
 
 ![esp01-flash](https://user-images.githubusercontent.com/6020549/33159146-b8456238-d053-11e7-8202-a86cca2f8a3d.jpg)
 
@@ -116,7 +117,7 @@ See [here](https://github.com/nopnop2002/Arduino-ESPAT-TCP/tree/master/Flash_AT_
 GPIO2 must be pulled up.   
 GPIO0 must be pulled up.   
 CH_PD must be pulled up.   
-
+RESET must be pulled up.   
 
 ![esp01-setup](https://user-images.githubusercontent.com/6020549/33159150-bdade984-d053-11e7-9b93-bbbf05573441.jpg)
 
