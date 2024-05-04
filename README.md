@@ -176,7 +176,7 @@ Using this function, you can omit the SSID and password.
     WIFI CONNECTED
     WIFI GOT IP
     AT+CIPSTA?
-    +CIPSTA:ip:"192.168.10.164"
+    +CIPSTA:ip:"192.168.10.142"
     +CIPSTA:gateway:"192.168.10.1"
     +CIPSTA:netmask:"255.255.255.0"
     
