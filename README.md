@@ -169,6 +169,13 @@ _*** So UNO use Software Serial with low speed ***_
 
 Re-Connect to ESP01 with 4800 bps.   
 
+AT firmware has a function that automatically connects to the last connected AP when the module is reset.   
+Using this function, you can omit the SSID and password.   
+
+    AT+RST
+    WIFI CONNECTED
+    WIFI GOT IP
+
 ----
 
 # Connect ESP01 to UNO.
