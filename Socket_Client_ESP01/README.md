@@ -9,7 +9,7 @@ Socket port you use
 Interval of Packet Send(Second)   
 
 
-# tcp server using python
+# TCP server using python
 ```
 # -*- coding : UTF-8 -*-
 import socket
