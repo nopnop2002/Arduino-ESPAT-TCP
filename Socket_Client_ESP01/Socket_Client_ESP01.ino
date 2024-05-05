@@ -116,8 +116,8 @@ HardwareSerial Serial1(PA10, PA9);
 #define _MODEL_         "STM32 NUCLEO64 ST Core"
 #endif
 
-#define SERVER          "192.168.10.10"        // Server IP
-#define PORT            9876                   // Server port
+#define SERVER          "192.168.10.46"        // Server IP
+#define PORT            8080                   // Server port
 #define INTERVAL        5000                   // Interval of Packet Send(Second)
 
 //command to ESP
