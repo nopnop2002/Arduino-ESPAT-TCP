@@ -54,7 +54,7 @@ if __name__=='__main__':
             print("response={}".format(response))
         except:
             print("recv fail")
-            continue
+
         client.close()
         time.sleep(2)
 ```
