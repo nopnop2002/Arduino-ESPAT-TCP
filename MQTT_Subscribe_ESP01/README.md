@@ -13,3 +13,23 @@ MQTT Subscribe Payload Maximum Length
 Stop Button GPIO   
 - define RUNNING_LED     13   
 Running LED GPIO   
+
+
+# Publish using mosquitto_pub
+```
+#!/bin/bash
+#set -x
+fail=0
+while :
+do
+        payload=`date "+%Y/%m/%d %H:%M:%S"`
+        echo ${payload}
+        mosquitto_pub -h broker.hivemq.com -p 1883 -t "/ESP-AT-MQTT/text" -m "${payload}"
+        if [ $? -ne 0 ]; then
+                fail=$((++fail))
+                echo ${fail}
+                sleep 3
+        fi
+        sleep 1
+done
+```
