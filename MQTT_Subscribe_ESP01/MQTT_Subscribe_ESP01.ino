@@ -56,16 +56,16 @@
 #define SERIAL_RX       4
 #define SERIAL_TX       5
 SoftwareSerial Serial2(SERIAL_RX, SERIAL_TX); // RX, TX
-#define STOP_BUTTON     2 // 0: Disable STOP_BUTTON
-#define RUNNING_LED     3 // 0: Disable RUNNING_LED
+#define STOP_BUTTON     0  // 2: Enable  STOP_BUTTON 
+#define RUNNING_LED     13 // 0: Disable RUNNING_LED
 #define _BAUDRATE_      4800
 #define _SERIAL_        Serial2
 #define _MODEL_         "ATmega328"
 
 //for Arduino MEGA(ATmega2560)
 #elif defined(__AVR_ATmega2560__)
-#define STOP_BUTTON     2 // 0: Disable STOP_BUTTON
-#define RUNNING_LED     3 // 0: Disable RUNNING_LED
+#define STOP_BUTTON     0  // 2: Enable  STOP_BUTTON 
+#define RUNNING_LED     13 // 0: Disable RUNNING_LED
 #define _BAUDRATE_      115200
 #define _SERIAL_        Serial1
 #define _MODEL_         "ATmega2560"
@@ -133,14 +133,16 @@ HardwareSerial Serial1(PA10, PA9);
 #define _MODEL_         "STM32 NUCLEO64 ST Core"
 #endif
 
-#define MQTT_SERVER     "192.168.10.40"         // You can change
-//#define MQTT_SERVER     "broker.hivemq.com"
-//#define MQTT_SERVER     "iot.eclipse.org"
-#define MQTT_PORT       1883
-#define SUB_TOPIC       "#"                    // You can change
+#define MQTT_SERVER     "broker.hivemq.com"    // MQTT broker
+//#define MQTT_SERVER     "broker.emqx.io"       // MQTT broker
+//#define MQTT_SERVER     "iot.eclipse.org"      // MQTT broker
+#define MQTT_PORT       1883                   // MQTT port
+#define SUB_TOPIC       "/ESP-AT-MQTT/#"       // Subscribe topic
 #define MQTT_KEEP_ALIVE 60
 #define MAX_TOPIC       64                     // You can change
 #define MAX_PAYLOAD     64                     // You can change
+#define DNS_SERVER1     "8.8.8.8"              // DNS SERVER1
+#define DNS_SERVER2     "8.8.4.4"              // DNS SERVER2
 #define _DEBUG_         0                      // for Debug
 
 // Last Packet Send Time (MilliSecond)
@@ -253,8 +255,8 @@ void mqttPingreq() {
   //long=long(int)*1000は正しい値になる
   lastKeepAlive = now + long(MQTT_KEEP_ALIVE) * 1000;
   if (lastKeepAlive < 0) lastKeepAlive = long(MQTT_KEEP_ALIVE) * 1000; // OverFlow
-//  Serial.print("lastKeepAlive(9)=");
-//  Serial.println(lastKeepAlive);
+  //Serial.print("lastKeepAlive(9)=");
+  //Serial.println(lastKeepAlive);
 }
 
 void mqttPublish(char * buf, int blen) {
@@ -300,9 +302,6 @@ void putChar(char c) {
 
 
 void setup(){
-  char cmd[128];
-  int msize;
-
   Serial.begin(115200);
   delay(5000);
   Serial.print("_MODEL_=");
@@ -353,6 +352,30 @@ void setup(){
   Serial.print(MACaddress);
   Serial.println("]");
 
+  //Get DNS Server Information
+  sendCommand("AT+CIPDNS_CUR?");
+  if (!waitForString("OK", 2, 1000, true)) {
+    errorDisplay("AT+CIPDNS_CUR Fail");
+  }
+  clearBuffer();
+
+  //Set DNS Server Information
+  //AT+CIPDNS_CUR=<enable>[,<DNS server0>,<DNS server1>]
+  char cmd[128];
+  sprintf(cmd,"AT+CIPDNS_CUR=1,\"%s\",\"%s\"", DNS_SERVER1, DNS_SERVER2);
+  sendCommand(cmd);
+  if (!waitForString("OK", 2, 1000)) {
+    errorDisplay("AT+CIPDNS_CUR Fail");
+  }
+  clearBuffer();
+
+  //Get DNS Server Information again
+  sendCommand("AT+CIPDNS_CUR?");
+  if (!waitForString("OK", 2, 1000, true)) {
+    errorDisplay("AT+CIPDNS_CUR Fail");
+  }
+  clearBuffer();
+
   //Establishes TCP Connection
   sprintf(cmd,"AT+CIPSTART=\"TCP\",\"%s\",%d",MQTT_SERVER,MQTT_PORT);
   sendCommand(cmd);
@@ -365,7 +388,7 @@ void setup(){
   //Client requests a connection to a server
   Serial.print("MQTT CONNECTT.....");
   //ATmegaではNULL,NULLは正しく動かない
-  msize = buildConnect(cmd,MQTT_KEEP_ALIVE,MACaddress,"","");
+  int msize = buildConnect(cmd,MQTT_KEEP_ALIVE,MACaddress,"","");
   if (_DEBUG_) hexDump(cmd,msize);
   int ret = sendData(-1, cmd, msize, "", 0);
   if (ret) errorDisplay("MQTT Connect Fail");
@@ -399,14 +422,16 @@ void loop(){
   static int timer = 0;
   static int ledStatus = 1;
 
-  int buttonState = digitalRead(STOP_BUTTON);
-  if (buttonState == 1) {
-    mqttDisconnect();
-    Serial.println();
-    Serial.println("Sending DISCONNECT");
-    Serial.println("Subscribe end");
-    if (RUNNING_LED) digitalWrite(RUNNING_LED,LOW);
-    while(1) { }
+  if (STOP_BUTTON) {
+    int buttonState = digitalRead(STOP_BUTTON);
+    if (buttonState == 1) {
+      mqttDisconnect();
+      Serial.println();
+      Serial.println("Sending DISCONNECT");
+      Serial.println("Publish end");
+      if (RUNNING_LED) digitalWrite(RUNNING_LED,LOW);
+      while(1) { }
+    }
   }
 
 /*
