@@ -8,7 +8,7 @@ Port number of the UDP server to use
 - #define INTERVAL        1000   
 Interval of Packet Send(MillSecond)   
 
-# UDP server using python
+# UDP Broadcast server using python
 ```
 #!/usr/bin/python3
 # -*- coding : UTF-8 -*-
