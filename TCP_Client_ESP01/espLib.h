@@ -321,5 +321,3 @@ int getATVersion(char *buf, int szbuf, int timeout) {
   }
   return len;
 }
-
-

@@ -374,4 +374,3 @@ int waitConnect(int irq, int timeout) {
 
   return -1;
 }
-
