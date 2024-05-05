@@ -55,23 +55,13 @@ Supprted ATmega328/ATmega2560/STM32.
 
 ![slide1](https://user-images.githubusercontent.com/6020549/35101108-a13451d8-fca1-11e7-8cfd-37d71f18f880.JPG)
 
-**Socket_Client_ESP01**   
+**TCP_Client_ESP01**   
 Simple TCP Socket Client Application.   
 Supprted ATmega328/ATmega2560/STM32.   
 
-**Socket_Server_ESP01**   
+**TCP_Server_ESP01**   
 Simple TCP Socket Server Application.   
 Supprted ATmega328/ATmega2560/STM32.   
-
-**Socket_Client_WiFiEsp**   
-Simple TCP Socket Client Application using WiFiEsp.   
-Supprted ATmega328/ATmega2560.   
-It require [this](https://github.com/bportaluri/WiFiEsp) library.   
-
-**Socket_Server_WiFiEsp**   
-Simple TCP Socket Server Application using WiFiEsp.   
-Supprted ATmega328/ATmega2560.   
-It require [this](https://github.com/bportaluri/WiFiEsp) library.   
 
 ![slide2](https://user-images.githubusercontent.com/6020549/35101341-9019e394-fca2-11e7-9edd-0aa9086fd5db.JPG)
 
