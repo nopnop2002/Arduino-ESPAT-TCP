@@ -116,8 +116,8 @@ HardwareSerial Serial1(PA10, PA9);
 #endif
 
 #define INTERVAL        10                     // Interval of Packet Send(Second)
-#define BROAD_PORT      9876                   // Remote Port
-#define LOCAL_PORT      2390                   // Local Port
+#define BROAD_PORT      8080                   // Remote Port
+#define LOCAL_PORT      9090                   // Local Port
 #define LINK_ID         3                      // Link ID
 
 
