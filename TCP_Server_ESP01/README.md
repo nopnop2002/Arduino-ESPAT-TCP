@@ -37,8 +37,13 @@ if __name__=='__main__':
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print("create socket")
 
-        client.connect((args.host, args.port))
-        print("connect to host")
+        client.settimeout(10.0)
+        try:
+            client.connect((args.host, args.port))
+            print("connect to host")
+        except:
+            print("connect fail")
+            continue
 
         msg = "data {} from client".format(counter)
         counter = counter + 1
