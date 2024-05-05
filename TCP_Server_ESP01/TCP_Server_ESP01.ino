@@ -200,6 +200,7 @@ void loop(void) {
 
   if (id < 0) {
     Serial.println("waitConnect Fail");
+    delay(1000);
     resetFunc(); // call reset
   }
   
@@ -224,6 +225,7 @@ void loop(void) {
     int ret = sendData(id, smsg, rlen, "", 0);
     if (ret) {
       Serial.println("sendData Fail");
+      delay(1000);
       resetFunc(); // call reset
     }
     
