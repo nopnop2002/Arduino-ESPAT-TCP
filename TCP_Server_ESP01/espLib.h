@@ -89,7 +89,7 @@ int sendData(int id, char *buf, int blen, char *rmote, unsigned int port) {
   
   //Send Packet
   for(int i=0;i<blen;i++) espSerial->write(buf[i]);
-  if (!waitForString("SEND OK", 7, 1000)) return 2;
+  if (!waitForString("SEND OK", 7, 2000)) return 2;
   return 0;  
 }
 

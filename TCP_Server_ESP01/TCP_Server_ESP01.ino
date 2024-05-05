@@ -118,9 +118,6 @@ HardwareSerial Serial1(PA10, PA9);
 #define MY_IP           "192.168.10.21"        // MY IP Address
 #define MY_PORT         "8080"                 // Listen Port
 
-//command to ESP
-char cmd[64];
-
 void setup(void)
 {
   Serial.begin(115200);
@@ -154,6 +151,7 @@ void setup(void)
   clearBuffer();
 
   //Set IP address of Station
+  char cmd[64];
   sprintf(cmd, "AT+CIPSTA_CUR=\"%s\"", MY_IP);
   sendCommand(cmd);
   if (!waitForString("OK", 2, 1000)) {
@@ -185,6 +183,8 @@ void setup(void)
   Serial.println("Start TCP/IP Server [" + String(_MODEL_) + "] wait for " + String(MY_PORT) + " Port");
 }
 
+void(* resetFunc) (void) = 0; //declare reset function @ address 0
+
 void loop(void) {
   char smsg[64];
   char rmsg[64];
@@ -197,6 +197,11 @@ void loop(void) {
     Serial.print("Connect id=");
     Serial.println(id);
   }
+
+  if (id < 0) {
+    resetFunc(); // call reset
+  }
+  
   if (id >= 0) {
     //Receive data
     rlen = readResponse(id, rmsg, sizeof(rmsg), 5000);
@@ -217,7 +222,8 @@ void loop(void) {
     //Send response
     int ret = sendData(id, smsg, rlen, "", 0);
     if (ret) {
-       errorDisplay("sendData Fail");
+      errorDisplay("sendData Fail");
+      resetFunc(); // call reset
     }
     
     //Wait from client disconnection
