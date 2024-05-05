@@ -17,3 +17,7 @@ Stop Button GPIO
 Running LED GPIO   
 
 
+# Subscribe using mosquitto_sub
+```
+mosquitto_sub -v -h "broker.hivemq.com" -p 1883 -t "/ESP-AT-MQTT/#"
+```
