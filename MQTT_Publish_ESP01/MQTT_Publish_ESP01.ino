@@ -138,7 +138,7 @@ HardwareSerial Serial1(PA10, PA9);
 #define MQTT_SERVER     "broker.hivemq.com"    // MQTT broker
 //#define MQTT_SERVER     "broker.emqx.io"       // MQTT broker
 //#define MQTT_SERVER     "iot.eclipse.org"      // MQTT broker
-#define MQTT_PORT       1883                   // MQRR port
+#define MQTT_PORT       1883                   // MQTT port
 #define MQTT_TOPIC      "ESP-AT-MQTT/"         // Publish topic
 #define MQTT_KEEP_ALIVE 60
 #define MQTT_WILL_TOPIC "ESP-AT-MQTT/"         // Will topic
