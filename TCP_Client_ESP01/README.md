@@ -34,13 +34,23 @@ if __name__=='__main__':
 
         buffer_size = 1024
         while True:
-            msg = client.recv(buffer_size)
-            print("len(msg)={}".format(len(msg)))
-            if (len(msg) == 0): break
-            if (type(msg) == bytes):
-                msg=msg.decode('utf-8')
-            print("Received Data : {}".format(msg))
-            client.send(b"OK")
+            rmsg = client.recv(buffer_size)
+            print("len(rmsg)={}".format(len(rmsg)))
+            if (len(rmsg) == 0): break
+            if (type(rmsg) == bytes):
+                rmsg=rmsg.decode('utf-8')
+            print("Received Data : {}".format(rmsg))
+
+            smsg = ""
+            for ch in rmsg:
+                #print("ch={}".format(ch))
+                if ch.islower():
+                    smsg = smsg + ch.upper()
+                else:
+                    smsg = smsg + ch.lower()
+
+            print("smsg={}".format(smsg))
+            client.send(smsg.encode(encoding='utf-8'))
 
         client.close()
 ```
