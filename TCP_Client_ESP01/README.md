@@ -11,6 +11,7 @@ Interval of Packet Send(Second)
 
 # TCP server using python
 ```
+#!/usr/bin/python3
 # -*- coding : UTF-8 -*-
 import socket
 import argparse
