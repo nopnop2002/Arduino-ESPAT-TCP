@@ -6,7 +6,7 @@ IP address of the TCP server to use
 - #define PORT            8080   
 Port number of the TCP server to use   
 - #define INTERVAL        5000   
-Interval of Packet Send(Second)   
+Interval of Packet Send(MillSecond)   
 
 
 # TCP server using python
