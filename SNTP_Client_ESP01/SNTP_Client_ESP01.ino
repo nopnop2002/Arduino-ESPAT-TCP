@@ -118,6 +118,8 @@ HardwareSerial Serial1(PA10, PA9);
 #define INTERVAL        10                     // Interval of Packet Send(Second)
 #define SNTP_SERVER     "time.google.com"      // SNTP Server
 #define TIME_ZONE       9                      // Time Difference from GMT
+#define DNS_SERVER1     "8.8.8.8"              // DNS SERVER1
+#define DNS_SERVER2     "8.8.4.4"              // DNS SERVER2
 
 
 // Last Packet Send Time (MilliSecond)
@@ -168,15 +170,31 @@ void setup(){
   Serial.print(MACaddress);
   Serial.println("]");
 
-  //Get SDK Version
-  char ATversion[64];
-  getATVersion(ATversion,sizeof(ATversion),2000);
-  Serial.print("ATversion=[");
-  Serial.print(ATversion);
-  Serial.println("]");
+  //Get DNS Server Information
+  sendCommand("AT+CIPDNS_CUR?");
+  if (!waitForString("OK", 2, 1000, true)) {
+    errorDisplay("AT+CIPDNS_CUR Fail");
+  }
+  clearBuffer();
+
+  //Set DNS Server Information
+  //AT+CIPDNS_CUR=<enable>[,<DNS server0>,<DNS server1>]
+  char cmd[128];
+  sprintf(cmd,"AT+CIPDNS_CUR=1,\"%s\",\"%s\"", DNS_SERVER1, DNS_SERVER2);
+  sendCommand(cmd);
+  if (!waitForString("OK", 2, 1000)) {
+    errorDisplay("AT+CIPDNS_CUR Fail");
+  }
+  clearBuffer();
+
+  //Get DNS Server Information again
+  sendCommand("AT+CIPDNS_CUR?");
+  if (!waitForString("OK", 2, 1000, true)) {
+    errorDisplay("AT+CIPDNS_CUR Fail");
+  }
+  clearBuffer();
 
   //Sets the Configuration of SNTP
-  char cmd[128];
 #ifdef SNTP_SERVER
   sprintf(cmd,"AT+CIPSNTPCFG=1,%d,\"%s\"",TIME_ZONE,SNTP_SERVER);
 #else
@@ -184,8 +202,6 @@ void setup(){
 #endif
   sendCommand(cmd);
   if (!waitForString("OK", 2, 5000)) {
-    Serial.println("Check your AT-Firmware SDK Version");
-    Serial.println("It's required AT Version 1.5.0 or later");
     errorDisplay("AT+CIPSNTPCFG Fail");
   }
   clearBuffer();

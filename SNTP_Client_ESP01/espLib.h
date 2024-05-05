@@ -13,7 +13,7 @@ void serialSetup(Stream &port) {
 }
 
 //Wait for specific input string until timeout runs out
-bool waitForString(char* input, int length, unsigned int timeout) {
+bool waitForString(char* input, int length, unsigned int timeout, bool print=false) {
 
   unsigned long end_time = millis() + timeout;
   char current_byte = 0;
@@ -24,7 +24,7 @@ bool waitForString(char* input, int length, unsigned int timeout) {
         
         //Read one byte from serial port
         current_byte = espSerial->read();
-        if (_DEBUG_) Serial.print(current_byte);
+        if (print) Serial.print(current_byte);
         if (current_byte != -1) {
           //Search one character at a time
           if (current_byte == input[index]) {
@@ -32,6 +32,7 @@ bool waitForString(char* input, int length, unsigned int timeout) {
             
             //Found the string
             if (index == length) {              
+              if (print) Serial.println();
               return true;
             }
           //Restart position of character to look for
@@ -318,5 +319,3 @@ int getATVersion(char *buf, int szbuf, int timeout) {
   }
   return len;
 }
-
-
