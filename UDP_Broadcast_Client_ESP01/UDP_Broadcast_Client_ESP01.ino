@@ -115,9 +115,9 @@ HardwareSerial Serial1(PA10, PA9);
 #define _MODEL_         "STM32 NUCLEO64 ST Core"
 #endif
 
-#define REMOTE_PORT     8080                   // Remote Port
-#define LOCAL_PORT      9090                   // Local Port
 #define LINK_ID         3                      // Link ID
+#define REMOTE_HOST     "255.255.255.255"      // Remote Host
+#define REMOTE_PORT     8080                   // Remote Port
 #define INTERVAL        1000                   // Interval of Packet Send(MillSecond)
 
 // Last Packet Send Time (MilliSecond)
@@ -169,17 +169,10 @@ void setup(void)
   Serial.print(MACaddress);
   Serial.println("]");  
 
-  //Enable multi connections
-  sendCommand("AT+CIPMUX=1");
-  if (!waitForString("OK", 2, 1000)) {
-    errorDisplay("AT+CIPMUX Fail");
-  }
-  clearBuffer();
-
-  //Establish UDP Transmission
-  //AT+CIPSTART=<link ID>,<type="UDP">,<remoteIP="255.255.255.255">,<remote port>,<UDP local port>
+  //Establish UDP Transmission (Single connection)
+  //AT+CIPSTART=<type="UDP">,<remote host>,<remote port>
   char cmd[64];
-  sprintf(cmd,"AT+CIPSTART=%d,\"UDP\",\"255.255.255.255\",%u,%u", LINK_ID, REMOTE_PORT, LOCAL_PORT);
+  sprintf(cmd,"AT+CIPSTART=\"UDP\",\"%s\",%u", REMOTE_HOST, REMOTE_PORT);
   sendCommand(cmd);
   if (!waitForString("OK", 2, 1000)) {
     errorDisplay("AT+CIPSTART Fail");
@@ -193,6 +186,7 @@ void setup(void)
 void loop(void) {
   static int num = 0;
   char smsg[64];
+  char rmsg[64];
 
   // If there is some input, a program is ended.
   if (Serial.available() > 0) {
@@ -211,11 +205,28 @@ void loop(void) {
   if (( now - lastSendPacketTime) > 0) {
     lastSendPacketTime = now + INTERVAL;
     int sz_smsg = sprintf(smsg, "data from %s %05d", _MODEL_, num);
-    Serial.println(smsg);
+    Serial.write((uint8_t *)smsg, sz_smsg);
     num++;
-    int ret = sendData(LINK_ID, smsg, sz_smsg, "", 0);
+
+    //Send Data
+    int ret = sendData(-1, smsg, sz_smsg, "", 0);
     if (ret) {
       errorDisplay("sendData Fail");
     }
+
+    //Read Response
+    int readLen = readResponse(-1, rmsg, sizeof(rmsg), 5000);
+    if (_DEBUG_) {
+      Serial.println();
+      Serial.print("readLen=");
+      Serial.println(readLen);
+    }
+    Serial.print("---->");
+    Serial.write((uint8_t *)rmsg, readLen);
+    Serial.println();
+    if (readLen < 0) {
+      errorDisplay("Server not response");
+    }
+    clearBuffer();    
   }
 }

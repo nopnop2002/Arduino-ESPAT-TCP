@@ -33,12 +33,26 @@ if __name__=='__main__':
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.bind(('<broadcast>', args.port))
-    sock.setblocking(0)
+    sock.settimeout(1.0)
 
     while running:
-        result = select.select([sock],[],[])
-        msg = result[0][0].recv(1024)
-        if (type(msg) == bytes):
-            msg=msg.decode('utf-8')
-        print(msg.strip())
+        try:
+            rmsg, cli_addr = sock.recvfrom(1024)
+            if (type(rmsg) == bytes):
+                rmsg=rmsg.decode('utf-8')
+            print("[{}]".format(rmsg),end="")
+        except:
+            #print("timeout")
+            continue
+
+        smsg = ""
+        for ch in rmsg:
+            #print("ch={}".format(ch))
+            if ch.islower():
+                smsg = smsg + ch.upper()
+            else:
+                smsg = smsg + ch.lower()
+
+        print("---->[{}]".format(smsg))
+        sock.sendto(smsg.encode(encoding='utf-8'), cli_addr)
 ```
