@@ -123,42 +123,43 @@ RESET must be pulled up.
 
 Connect to ESP01 at 115200 bps using terminal software.   
 
-    AT+GMR
-    AT version:0.40.0.0(Aug  8 2015 14:45:58)
-    SDK version:1.3.0
-    Ai-Thinker Technology Co.,Ltd.
-    Build:1.3.0.2 Sep 11 2015 11:48:04
-    OK
-    
-    AT+CWMODE=1
-    
-    OK
-    AT+CWLAP
-    +CWLAP:(3,"Picking",-86,"34:12:98:08:4b:4a",1,-4)
-    +CWLAP:(4,"ctc-g-fa4a2e",-92,"c0:25:a2:b1:8c:2e",2,3)
-    +CWLAP:(4,"aterm-e625c0-g",-49,"c0:25:a2:ac:cb:ba",3,15)
-    +CWLAP:(1,"aterm-e625c0-gw",-48,"c2:25:a2:ac:cb:ba",3,15)
-    
-    OK
-    
-    AT+CWJAP="Your AP's SSID","Your AP's password"
-    WIFI CONNECTED
-    WIFI GOT IP
-    
-    OK
-    
-    AT+CIPSTA?
-    +CIPSTA:ip:"192.168.10.142"
-    +CIPSTA:gateway:"192.168.10.1"
-    +CIPSTA:netmask:"255.255.255.0"
-    
-    OK
-    AT+CWQAP
-    
-    OK
-    
-    WIFI DISCONNECT
+```
+AT+GMR
+AT version:1.6.2.0(Apr 13 2018 11:10:59)
+SDK version:2.2.1(6ab97e9)
+compile time:Jun  7 2018 19:34:26
+Bin version(Wroom 02):1.6.2
+OK
 
+AT+CWMODE=1
+
+OK
+AT+CWLAP
++CWLAP:(3,"Picking",-86,"34:12:98:08:4b:4a",1,-4)
++CWLAP:(4,"ctc-g-fa4a2e",-92,"c0:25:a2:b1:8c:2e",2,3)
++CWLAP:(4,"aterm-e625c0-g",-49,"c0:25:a2:ac:cb:ba",3,15)
++CWLAP:(1,"aterm-e625c0-gw",-48,"c2:25:a2:ac:cb:ba",3,15)
+
+OK
+
+AT+CWJAP="Your AP's SSID","Your AP's password"
+WIFI CONNECTED
+WIFI GOT IP
+
+OK
+
+AT+CIPSTA?
++CIPSTA:ip:"192.168.10.142"
++CIPSTA:gateway:"192.168.10.1"
++CIPSTA:netmask:"255.255.255.0"
+
+OK
+AT+CWQAP
+
+OK
+
+WIFI DISCONNECT
+```
 
 _*** UNO ONLY ***_   
 _*** Change baudrate to 4800bps ***_   
