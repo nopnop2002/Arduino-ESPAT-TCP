@@ -12,6 +12,7 @@ Interval of Packet Send(MillSecond)
 ```
 #!/usr/bin/python3
 # -*- coding : UTF-8 -*-
+import time
 import select
 import socket
 import signal
