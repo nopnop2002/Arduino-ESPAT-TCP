@@ -115,15 +115,13 @@ HardwareSerial Serial1(PA10, PA9);
 #define _MODEL_         "STM32 NUCLEO64 ST Core"
 #endif
 
-#define INTERVAL        10                     // Interval of Packet Send(Second)
-#define BROAD_PORT      8080                   // Remote Port
+#define REMOTE_PORT     8080                   // Remote Port
 #define LOCAL_PORT      9090                   // Local Port
 #define LINK_ID         3                      // Link ID
-
+#define INTERVAL        5000                   // Interval of Packet Send(MillSecond)
 
 // Last Packet Send Time (MilliSecond)
-unsigned long lastSendPacketTime = 0;
-
+long lastSendPacketTime;
 
 void setup(void)
 {
@@ -181,7 +179,7 @@ void setup(void)
   //Establish UDP Transmission
   //AT+CIPSTART=<link ID>,<type="UDP">,<remoteIP="255.255.255.255">,<remote port>,<UDP local port>
   char cmd[64];
-  sprintf(cmd,"AT+CIPSTART=%d,\"UDP\",\"255.255.255.255\",%u,%u", LINK_ID, BROAD_PORT, LOCAL_PORT);
+  sprintf(cmd,"AT+CIPSTART=%d,\"UDP\",\"255.255.255.255\",%u,%u", LINK_ID, REMOTE_PORT, LOCAL_PORT);
   sendCommand(cmd);
   if (!waitForString("OK", 2, 1000)) {
     errorDisplay("AT+CIPSTART Fail");
@@ -189,33 +187,35 @@ void setup(void)
   clearBuffer();
 
   Serial.println("Start UDP Broadcast Client [" + String(_MODEL_) + "] via ESP8266");
-
   lastSendPacketTime = millis();
 }
 
 void loop(void) {
-  static int counter=0;
-  char buff[64];
-  
-  long now = millis();
-  if (now - lastSendPacketTime > 1000) { // One second has elapsed
-    lastSendPacketTime = now;
-    counter++;
-    if ( (counter % 10) == 0) {
-      Serial.print("+");
-    } else {
-      Serial.print(".");
-    }
+  static int num = 0;
+  char smsg[64];
 
-    if (counter == INTERVAL) {
-      //Send Data
-      sprintf(buff,"Broadcast from %s",_MODEL_);
-      Serial.println("Sent Broadcast message");
-      int ret = sendData(LINK_ID, buff, strlen(buff), "", 0);
-      if (ret) {
-        errorDisplay("sendData Fail");
-      }
-      counter=0;
+  // If there is some input, a program is ended.
+  if (Serial.available() > 0) {
+    char inChar = Serial.read();
+    Serial.println("KeyIn");
+    sendCommand("AT+CWQAP");
+    if (!waitForString("OK", 2, 1000)) {
+      errorDisplay("AT+CWQAP Fail");
+    }
+    clearBuffer();
+    Serial.println("client end");
+    while (1) { }
+  }
+    
+  long now = millis();
+  if (( now - lastSendPacketTime) > 0) {
+    lastSendPacketTime = now + INTERVAL;
+    int sz_smsg = sprintf(smsg, "data from %s %05d", _MODEL_, num);
+    Serial.println(smsg);
+    num++;
+    int ret = sendData(LINK_ID, smsg, sz_smsg, "", 0);
+    if (ret) {
+      errorDisplay("sendData Fail");
     }
   }
 }
