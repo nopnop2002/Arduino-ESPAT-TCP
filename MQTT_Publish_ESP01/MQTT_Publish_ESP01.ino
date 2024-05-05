@@ -56,23 +56,23 @@
 #define SERIAL_RX       4
 #define SERIAL_TX       5
 SoftwareSerial Serial2(SERIAL_RX, SERIAL_TX); // RX, TX
-#define STOP_BUTTON     2 // 0: Disable STOP_BUTTON
-#define RUNNING_LED     3 // 0: Disable RUNNING_LED
+#define STOP_BUTTON     0  // 2: Enable  STOP_BUTTON 
+#define RUNNING_LED     13 // 0: Disable RUNNING_LED
 #define _BAUDRATE_      4800
 #define _SERIAL_        Serial2
 #define _MODEL_         "ATmega328"
 
 //for Arduino MEGA(ATmega2560)
 #elif defined(__AVR_ATmega2560__)
-#define STOP_BUTTON     2 // 0: Disable STOP_BUTTON
-#define RUNNING_LED     3 // 0: Disable RUNNING_LED
+#define STOP_BUTTON     0  // 2: Enable  STOP_BUTTON 
+#define RUNNING_LED     13 // 0: Disable RUNNING_LED
 #define _BAUDRATE_      115200
 #define _SERIAL_        Serial1
 #define _MODEL_         "ATmega2560"
 
 //for STM32F103(MAPLE Core)
 #elif defined(__STM32F1__)
-#define STOP_BUTTON     PB2 // 0: Disable STOP_BUTTON
+#define STOP_BUTTON     PB2 // 0: Disable STOP_BUTTON 
 #define RUNNING_LED     PB1 // 0: Disable RUNNING_LED
 #define _BAUDRATE_      115200
 #define _SERIAL_        Serial2
@@ -81,7 +81,7 @@ SoftwareSerial Serial2(SERIAL_RX, SERIAL_TX); // RX, TX
 //for STM32F103(ST Core)
 #elif defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_BLACKPILL_F103C8) || defined(ARDUINO_MAPLEMINI_F103CB)
 HardwareSerial Serial2(PA3, PA2);
-#define STOP_BUTTON     PB11 // 0: Disable STOP_BUTTON
+#define STOP_BUTTON     PB11 // 0: Disable STOP_BUTTON 
 #define RUNNING_LED     PB10 // 0: Disable RUNNING_LED
 #define _BAUDRATE_      115200
 #define _SERIAL_        Serial2
@@ -90,7 +90,7 @@ HardwareSerial Serial2(PA3, PA2);
 //for STM32F303(ST Core)
 #elif defined(ARDUINO_BLACKPILL_F303CC)
 HardwareSerial Serial2(PA3, PA2);
-#define STOP_BUTTON     PB11 // 0: Disable STOP_BUTTON
+#define STOP_BUTTON     PB11 // 0: Disable STOP_BUTTON 
 #define RUNNING_LED     PB10 // 0: Disable RUNNING_LED
 #define _BAUDRATE_      115200
 #define _SERIAL_        Serial2
@@ -99,7 +99,7 @@ HardwareSerial Serial2(PA3, PA2);
 //for STM32F401(ST Core)
 #elif defined(ARDUINO_BLACKPILL_F401CC)
 HardwareSerial Serial2(PA3, PA2);
-#define STOP_BUTTON     PB13 // 0: Disable STOP_BUTTON
+#define STOP_BUTTON     PB13 // 0: Disable STOP_BUTTON 
 #define RUNNING_LED     PB12 // 0: Disable RUNNING_LED
 #define _BAUDRATE_      115200
 #define _SERIAL_        Serial2
@@ -108,7 +108,7 @@ HardwareSerial Serial2(PA3, PA2);
 //for STM32F4DISC1(ST Core)
 #elif defined(ARDUINO_DISCO_F407VG)
 HardwareSerial Serial3(PD9, PD8);
-#define STOP_BUTTON     PB11 // 0: Disable STOP_BUTTON
+#define STOP_BUTTON     PB11 // 0: Disable STOP_BUTTON 
 #define RUNNING_LED     PB10 // 0: Disable RUNNING_LED
 #define _BAUDRATE_      115200
 #define _SERIAL_        Serial3
@@ -134,16 +134,18 @@ HardwareSerial Serial1(PA10, PA9);
 #endif
 
 
-#define INTERVAL        100                     // You can change
-#define MQTT_SERVER     "192.168.10.40"         // You can change
-//#define MQTT_SERVER     "broker.hivemq.com"
-//#define MQTT_SERVER     "iot.eclipse.org"
-#define MQTT_PORT       1883
-#define MQTT_TOPIC      "ESP-AT-MQTT/"          // You can change
+#define INTERVAL        10                     // Publish interval [Sec]
+#define MQTT_SERVER     "broker.hivemq.com"    // MQTT broker
+//#define MQTT_SERVER     "broker.emqx.io"       // MQTT broker
+//#define MQTT_SERVER     "iot.eclipse.org"      // MQTT broker
+#define MQTT_PORT       1883                   // MQRR port
+#define MQTT_TOPIC      "ESP-AT-MQTT/"         // Publish topic
 #define MQTT_KEEP_ALIVE 60
-#define MQTT_WILL_TOPIC "ESP-AT-MQTT/"          // You can change
-#define MQTT_WILL_MSG   "I am leaving..."       // You can change
-#define _DEBUG_         0                       // for Debug
+#define MQTT_WILL_TOPIC "ESP-AT-MQTT/"         // Will topic
+#define MQTT_WILL_MSG   "I am leaving..."      // Will payload
+#define DNS_SERVER1     "8.8.8.8"              // DNS SERVER1
+#define DNS_SERVER2     "8.8.4.4"              // DNS SERVER2
+#define _DEBUG_         0                      // for Debug
 
 // Last Packet Send Time (MilliSecond)
 unsigned long lastSendPacketTime = 0;
@@ -162,11 +164,11 @@ int buildConnect(char *buf, int keep_alive, char *client_id, char *will_topic, c
   rlen = rlen + 2 + client_id_len;
   
   int will_topic_len = strlen(will_topic);
-//  Serial.print("will_topic_len=");
-//  Serial.println(will_topic_len);
+  //Serial.print("will_topic_len=");
+  //Serial.println(will_topic_len);
   int will_msg_len = strlen(will_msg);
-//  Serial.print("will_msg_len=");
-//  Serial.println(will_msg_len);
+  //Serial.print("will_msg_len=");
+  //Serial.println(will_msg_len);
 
   if (will_topic_len > 0 && will_msg_len > 0) {
     buf[pos++] = 0x00;
@@ -242,8 +244,8 @@ void mqttPingreq() {
   //long = long (int) * 1000 is the correct value
   lastKeepAlive = now + long(MQTT_KEEP_ALIVE) * 1000;
   if (lastKeepAlive < 0) lastKeepAlive = long(MQTT_KEEP_ALIVE) * 1000; // OverFlow
-//  Serial.print("lastKeepAlive(9)=");
-//  Serial.println(lastKeepAlive);
+  //Serial.print("lastKeepAlive(9)=");
+  //Serial.println(lastKeepAlive);
 }
 
 void mqttPublish(char * buf, int blen) {
@@ -277,9 +279,6 @@ void mqttDisconnect() {
 
 
 void setup(){
-  char cmd[128];
-  int msize;
-
   Serial.begin(115200);
   delay(5000);
   Serial.print("_MODEL_=");
@@ -330,6 +329,30 @@ void setup(){
   Serial.print(MACaddress);
   Serial.println("]");
 
+  //Get DNS Server Information
+  sendCommand("AT+CIPDNS_CUR?");
+  if (!waitForString("OK", 2, 1000, true)) {
+    errorDisplay("AT+CIPDNS_CUR Fail");
+  }
+  clearBuffer();
+
+  //Set DNS Server Information
+  //AT+CIPDNS_CUR=<enable>[,<DNS server0>,<DNS server1>]
+  char cmd[128];
+  sprintf(cmd,"AT+CIPDNS_CUR=1,\"%s\",\"%s\"", DNS_SERVER1, DNS_SERVER2);
+  sendCommand(cmd);
+  if (!waitForString("OK", 2, 1000)) {
+    errorDisplay("AT+CIPDNS_CUR Fail");
+  }
+  clearBuffer();
+
+  //Get DNS Server Information again
+  sendCommand("AT+CIPDNS_CUR?");
+  if (!waitForString("OK", 2, 1000, true)) {
+    errorDisplay("AT+CIPDNS_CUR Fail");
+  }
+  clearBuffer();
+  
   //Establishes TCP Connection
   sprintf(cmd,"AT+CIPSTART=\"TCP\",\"%s\",%d",MQTT_SERVER,MQTT_PORT);
   sendCommand(cmd);
@@ -342,7 +365,7 @@ void setup(){
   //Client requests a connection to a server
   Serial.print("MQTT CONNECT.....");
   //Client requests a connection to a server
-  msize = buildConnect(cmd,MQTT_KEEP_ALIVE,MACaddress,MQTT_WILL_TOPIC,MQTT_WILL_MSG);
+  int msize = buildConnect(cmd,MQTT_KEEP_ALIVE,MACaddress,MQTT_WILL_TOPIC,MQTT_WILL_MSG);
   if (_DEBUG_) hexDump(cmd,msize);
   int ret = sendData(-1, cmd, msize, "", 0);
   if (ret) errorDisplay("MQTT Connect Fail");
@@ -366,14 +389,16 @@ void loop(){
   char payload[128];
   int msize;
 
-  int buttonState = digitalRead(STOP_BUTTON);
-  if (buttonState == 1) {
-    mqttDisconnect();
-    Serial.println();
-    Serial.println("Sending DISCONNECT");
-    Serial.println("Publish end");
-    if (RUNNING_LED) digitalWrite(RUNNING_LED,LOW);
-    while(1) { }
+  if (STOP_BUTTON) {
+    int buttonState = digitalRead(STOP_BUTTON);
+    if (buttonState == 1) {
+      mqttDisconnect();
+      Serial.println();
+      Serial.println("Sending DISCONNECT");
+      Serial.println("Publish end");
+      if (RUNNING_LED) digitalWrite(RUNNING_LED,LOW);
+      while(1) { }
+    }
   }
   
   unsigned long now = millis();

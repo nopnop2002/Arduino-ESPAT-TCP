@@ -1,9 +1,9 @@
 # Environment
 You need to change the following environment.
 
-- #define MQTT_SERVER     "192.168.10.40"   
+- #define MQTT_SERVER     "broker.hivemq.com"   
 MQTT server you use   
-- #define INTERVAL        100   
+- #define INTERVAL        10   
 MQTT Publish Interval(Second)   
 - #define MQTT_TOPIC      "ESP-AT-MQTT/"   
 MQTT Publish Topic   
@@ -11,9 +11,9 @@ MQTT Publish Topic
 MQTT Will Topic   
 - #define MQTT_WILL_MSG   "I am leaving..."   
 MQTT Will Payload   
-- #define STOP_BUTTON     PB11 // 0: Disable STOP_BUTTON   
+- #define STOP_BUTTON     0  // 2: Enable  STOP_BUTTON 
 Stop Button   
-- #define RUNNING_LED     PB10 // 0: Disable RUNNING_LED   
+- #define RUNNING_LED     13 // 0: Disable RUNNING_LED
 Running LED   
 
 
