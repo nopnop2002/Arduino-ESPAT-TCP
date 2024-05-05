@@ -30,14 +30,16 @@ if __name__=='__main__':
         tcp_server.listen(listen_num)
 
         client,address = tcp_server.accept()
-        print("[*] Connected!! [ Source : {}]".format(address))
+        print("Connected!! [ Source : {}]".format(address))
 
         buffer_size = 1024
         while True:
-            data = client.recv(buffer_size)
-            print("len(data)={}".format(len(data)))
-            if (len(data) == 0): break
-            print("[*] Received Data : {}".format(data))
+            msg = client.recv(buffer_size)
+            print("len(msg)={}".format(len(msg)))
+            if (len(msg) == 0): break
+            if (type(msg) == bytes):
+                msg=msg.decode('utf-8')
+            print("Received Data : {}".format(msg))
             client.send(b"OK")
 
         client.close()

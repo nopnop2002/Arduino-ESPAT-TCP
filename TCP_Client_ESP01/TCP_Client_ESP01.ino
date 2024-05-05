@@ -118,10 +118,8 @@ HardwareSerial Serial1(PA10, PA9);
 
 #define SERVER          "192.168.10.46"        // Server IP
 #define PORT            8080                   // Server port
-#define INTERVAL        5000                   // Interval of Packet Send(Second)
+#define INTERVAL        1000                   // Interval of Packet Send(MillSecond)
 
-//command to ESP
-char cmd[64];
 // Last Packet Send Time (MilliSecond)
 long lastSendPacketTime;
 
@@ -177,9 +175,9 @@ void setup(void)
 
 void loop(void) {
   static int num = 0;
+  char cmd[64];
   char smsg[64];
   char rmsg[64];
-  int sz_smsg;
 
   // If there is some input, a program is ended.
   if (Serial.available() > 0) {
@@ -196,7 +194,7 @@ void loop(void) {
 
   long now = millis();
   if (( now - lastSendPacketTime) > 0) {
-    lastSendPacketTime = millis() + INTERVAL;
+    lastSendPacketTime = now + INTERVAL;
     //Start connection
     //AT+CIPSTART=<type="TCP">,<remote IP>,<remote port>
     sprintf(cmd, "AT+CIPSTART=\"TCP\",\"%s\",%u", SERVER, PORT);
@@ -212,7 +210,7 @@ void loop(void) {
     clearBuffer();
 
     sprintf(smsg, "data from %s %05d", _MODEL_, num);
-    sz_smsg = strlen(smsg);
+    int sz_smsg = strlen(smsg);
     Serial.write((uint8_t *)smsg, sz_smsg);
     num++;
 
