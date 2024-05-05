@@ -11,9 +11,9 @@ MQTT Publish Topic
 MQTT Will Topic   
 - #define MQTT_WILL_MSG   "I am leaving..."   
 MQTT Will Payload   
-- #define STOP_BUTTON     0  // 2: Enable  STOP_BUTTON 
-Stop Button   
-- #define RUNNING_LED     13 // 0: Disable RUNNING_LED
-Running LED   
+- #define STOP_BUTTON     0   
+Stop Button GPIO   
+- #define RUNNING_LED     13   
+Running LED GPIO   
 
 
