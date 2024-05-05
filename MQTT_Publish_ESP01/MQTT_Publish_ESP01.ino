@@ -139,9 +139,9 @@ HardwareSerial Serial1(PA10, PA9);
 //#define MQTT_SERVER     "broker.emqx.io"       // MQTT broker
 //#define MQTT_SERVER     "iot.eclipse.org"      // MQTT broker
 #define MQTT_PORT       1883                   // MQTT port
-#define MQTT_TOPIC      "ESP-AT-MQTT/"         // Publish topic
+#define MQTT_TOPIC      "/ESP-AT-MQTT/"        // Publish topic
 #define MQTT_KEEP_ALIVE 60
-#define MQTT_WILL_TOPIC "ESP-AT-MQTT/"         // Will topic
+#define MQTT_WILL_TOPIC "/ESP-AT-MQTT/"        // Will topic
 #define MQTT_WILL_MSG   "I am leaving..."      // Will payload
 #define DNS_SERVER1     "8.8.8.8"              // DNS SERVER1
 #define DNS_SERVER2     "8.8.4.4"              // DNS SERVER2
