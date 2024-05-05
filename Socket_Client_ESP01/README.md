@@ -2,9 +2,9 @@
 You need to change the following environment.
 
 - #define SERVER          "192.168.10.46"    
-Socket server you use   
+IP address of the TCP server to use   
 - #define PORT            8080   
-Socket port you use   
+Port number of the TCP server to use   
 - #define INTERVAL        5000   
 Interval of Packet Send(Second)   
 
