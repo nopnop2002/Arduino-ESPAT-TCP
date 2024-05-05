@@ -3,10 +3,10 @@ UDP Broadcast Client using ESP8266 AT Instruction Set
 # Environment
 You need to change the following environment.
 
+- #define REMOTE_PORT     8080   
+Port number of the UDP server to use   
 - #define INTERVAL        5000   
 Interval of Packet Send(MillSecond)   
-- #define REMOTE_PORT     8080   
-UDP Remote Port   
 
 # UDP server using python
 ```
