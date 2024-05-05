@@ -117,13 +117,15 @@ HardwareSerial Serial1(PA10, PA9);
 #endif
 
 #define INTERVAL        10                     // Interval of Packet Send(Second)
-#define NTP_SERVER      "ntp.jst.mfeed.ad.jp"  // NTP Server
+#define NTP_SERVER      "time.google.com"      // NTP Server
+//#define NTP_SERVER      "216.239.35.4"         // NTP Server
 #define NTP_PORT        123                    // NTP Port
 #define LOCAL_PORT      2390                   // Local Port
 #define LINK_ID         3                      // Link ID
 #define NTP_PACKET_SIZE 48                     // NTP Packet Size
 #define TIME_ZONE       9                      // Time Difference from GMT
-
+#define DNS_SERVER1     "8.8.8.8"              // DNS SERVER1
+#define DNS_SERVER2     "8.8.4.4"              // DNS SERVER2
 
 // NTP Packet Buffer (Send & Receive)
 char packetBuffer[NTP_PACKET_SIZE];
@@ -214,6 +216,23 @@ void setup(void)
   Serial.print(MACaddress);
   Serial.println("]");  
 
+  // Get DNS Server Information
+  sendCommand("AT+CIPDNS_CUR?");
+  if (!waitForString("OK", 2, 1000)) {
+    errorDisplay("AT+CIPDNS_CUR Fail");
+  }
+  clearBuffer();
+
+  // Set DNS Server Information
+  // AT+CIPDNS_CUR=<enable>[,<DNS server0>,<DNS server1>]
+  char cmd[64];
+  sprintf(cmd,"AT+CIPDNS_CUR=1,\"%s\",\"%s\"", DNS_SERVER1, DNS_SERVER2);
+  sendCommand(cmd);
+  if (!waitForString("OK", 2, 1000)) {
+    errorDisplay("AT+CIPDNS_CUR Fail");
+  }
+  clearBuffer();
+
   //Enable multi connections
   sendCommand("AT+CIPMUX=1");
   if (!waitForString("OK", 2, 1000)) {
@@ -223,9 +242,8 @@ void setup(void)
 
   //Establish UDP Transmission
   //AT+CIPSTART=<link ID>,<type="UDP">,<remoteIP="0">,<remote port=0>,<UDP local port>,<UDP mode=2>
-  char cmd[64];
   sprintf(cmd,"AT+CIPSTART=%d,\"UDP\",\"0\",0,%u,2", LINK_ID, LOCAL_PORT);
-//  sendCommand("AT+CIPSTART=3,\"UDP\",\"0\",0,2390,2");
+  //sendCommand("AT+CIPSTART=3,\"UDP\",\"0\",0,2390,2");
   sendCommand(cmd);
   if (!waitForString("OK", 2, 1000)) {
     errorDisplay("AT+CIPSTART Fail");
@@ -252,7 +270,7 @@ void loop(void) {
     } else {
       Serial.print(".");
     }
-//    if (_DEBUG_) Serial.println("counter=" + String(counter));
+    //if (_DEBUG_) Serial.println("counter=" + String(counter));
     if (counter == INTERVAL) {
       // Send request o NTP server
       sendNTPpacket(NTP_SERVER, NTP_PORT);
@@ -262,8 +280,8 @@ void loop(void) {
 
   // Read data from NTP server
   int readLen = readResponse(LINK_ID, packetBuffer, NTP_PACKET_SIZE, 1000);
-//  Serial.print("packet received, length=");
-//  Serial.println(readLen);
+  //Serial.print("packet received, length=");
+  //Serial.println(readLen);
   if (readLen == NTP_PACKET_SIZE) {
     Serial.println("\nNTP packet received");
 
@@ -291,10 +309,13 @@ void loop(void) {
     uint8_t DayOfWeek = dow(epoch); 
     showTime("The UTC time is ", epoch, dow_char_EN(DayOfWeek));
 
-    // Local time(JAPAN)
-    if (TIME_ZONE != 0) {
+    // Local time
+    if (TIME_ZONE == 9) {
       DayOfWeek = dow(epoch + (TIME_ZONE * 60 * 60));
       showTime("Local time is ", epoch + (TIME_ZONE * 60 * 60), dow_char_JP(DayOfWeek));
+    } else {
+      DayOfWeek = dow(epoch + (TIME_ZONE * 60 * 60));
+      showTime("Local time is ", epoch + (TIME_ZONE * 60 * 60), dow_char_EN(DayOfWeek));
     }
   }
 }
