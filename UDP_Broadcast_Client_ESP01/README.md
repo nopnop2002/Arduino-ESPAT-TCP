@@ -5,7 +5,7 @@ You need to change the following environment.
 
 - #define REMOTE_PORT     8080   
 Port number of the UDP server to use   
-- #define INTERVAL        5000   
+- #define INTERVAL        1000   
 Interval of Packet Send(MillSecond)   
 
 # UDP server using python

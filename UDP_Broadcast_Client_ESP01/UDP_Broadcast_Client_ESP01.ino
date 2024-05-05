@@ -118,7 +118,7 @@ HardwareSerial Serial1(PA10, PA9);
 #define REMOTE_PORT     8080                   // Remote Port
 #define LOCAL_PORT      9090                   // Local Port
 #define LINK_ID         3                      // Link ID
-#define INTERVAL        5000                   // Interval of Packet Send(MillSecond)
+#define INTERVAL        1000                   // Interval of Packet Send(MillSecond)
 
 // Last Packet Send Time (MilliSecond)
 long lastSendPacketTime;
