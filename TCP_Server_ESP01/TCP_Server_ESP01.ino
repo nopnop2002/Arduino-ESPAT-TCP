@@ -115,8 +115,8 @@ HardwareSerial Serial1(PA10, PA9);
 #define _MODEL_         "STM32 NUCLEO64 ST Core"
 #endif
 
-#define MY_IP           "192.168.10.190"       // MY IP Address
-#define MY_PORT         "9876"                 // Listen Port
+#define MY_IP           "192.168.10.21"        // MY IP Address
+#define MY_PORT         "8080"                 // Listen Port
 
 //command to ESP
 char cmd[64];
