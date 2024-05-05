@@ -221,12 +221,12 @@ void loop(void) {
       Serial.print("readLen=");
       Serial.println(readLen);
     }
-    Serial.print("---->");
-    Serial.write((uint8_t *)rmsg, readLen);
-    Serial.println();
     if (readLen < 0) {
       errorDisplay("Server not response");
     }
+    Serial.print("---->");
+    Serial.write((uint8_t *)rmsg, readLen);
+    Serial.println();
     clearBuffer();    
   }
 }
