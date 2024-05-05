@@ -32,6 +32,7 @@ if __name__=='__main__':
     print("host={}".format(args.host))
     print("port={}".format(args.port))
 
+    counter = 0
     while running:
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print("create socket")
@@ -39,7 +40,9 @@ if __name__=='__main__':
         client.connect((args.host, args.port))
         print("connect to host")
 
-        client.send(b'data from client')
+        msg = "data {} from client".format(counter)
+        counter = counter + 1
+        client.send(msg.encode(encoding='utf-8'))
 
         response = client.recv(1024)
         print("response={}".format(response))
