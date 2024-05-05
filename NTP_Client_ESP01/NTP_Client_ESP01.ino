@@ -170,6 +170,31 @@ void showTime(char * title, time_t timet, char * dow) {
   Serial.println("]");
 }
 
+// send an NTP request to the time server at the given address
+void sendNTPpacket(char *ntpSrv, int ntpPort)
+{
+  // set all bytes in the buffer to 0
+  memset(packetBuffer, 0, NTP_PACKET_SIZE);
+  // Initialize values needed to form NTP request
+  // (see URL above for details on the packets)
+
+  packetBuffer[0] = 0b11100011;   // LI, Version, Mode
+  packetBuffer[1] = 0;     // Stratum, or type of clock
+  packetBuffer[2] = 6;     // Polling Interval
+  packetBuffer[3] = 0xEC;  // Peer Clock Precision
+  // 8 bytes of zero for Root Delay & Root Dispersion
+  packetBuffer[12]  = 49;
+  packetBuffer[13]  = 0x4E;
+  packetBuffer[14]  = 49;
+  packetBuffer[15]  = 52;
+
+  //Send Data
+  int ret = sendData(LINK_ID, packetBuffer, NTP_PACKET_SIZE, ntpSrv, ntpPort);
+  if (ret) {
+     errorDisplay("sendData Fail");
+  }
+}
+
 void setup(void)
 {
   Serial.begin(115200);
@@ -216,19 +241,26 @@ void setup(void)
   Serial.print(MACaddress);
   Serial.println("]");  
 
-  // Get DNS Server Information
+  //Get DNS Server Information
   sendCommand("AT+CIPDNS_CUR?");
+  if (!waitForString("OK", 2, 1000, true)) {
+    errorDisplay("AT+CIPDNS_CUR Fail");
+  }
+  clearBuffer();
+
+  //Set DNS Server Information
+  //AT+CIPDNS_CUR=<enable>[,<DNS server0>,<DNS server1>]
+  char cmd[64];
+  sprintf(cmd,"AT+CIPDNS_CUR=1,\"%s\",\"%s\"", DNS_SERVER1, DNS_SERVER2);
+  sendCommand(cmd);
   if (!waitForString("OK", 2, 1000)) {
     errorDisplay("AT+CIPDNS_CUR Fail");
   }
   clearBuffer();
 
-  // Set DNS Server Information
-  // AT+CIPDNS_CUR=<enable>[,<DNS server0>,<DNS server1>]
-  char cmd[64];
-  sprintf(cmd,"AT+CIPDNS_CUR=1,\"%s\",\"%s\"", DNS_SERVER1, DNS_SERVER2);
-  sendCommand(cmd);
-  if (!waitForString("OK", 2, 1000)) {
+  //Get DNS Server Information again
+  sendCommand("AT+CIPDNS_CUR?");
+  if (!waitForString("OK", 2, 1000, true)) {
     errorDisplay("AT+CIPDNS_CUR Fail");
   }
   clearBuffer();
@@ -318,30 +350,4 @@ void loop(void) {
       showTime("Local time is ", epoch + (TIME_ZONE * 60 * 60), dow_char_EN(DayOfWeek));
     }
   }
-}
-
-// send an NTP request to the time server at the given address
-void sendNTPpacket(char *ntpSrv, int ntpPort)
-{
-  // set all bytes in the buffer to 0
-  memset(packetBuffer, 0, NTP_PACKET_SIZE);
-  // Initialize values needed to form NTP request
-  // (see URL above for details on the packets)
-
-  packetBuffer[0] = 0b11100011;   // LI, Version, Mode
-  packetBuffer[1] = 0;     // Stratum, or type of clock
-  packetBuffer[2] = 6;     // Polling Interval
-  packetBuffer[3] = 0xEC;  // Peer Clock Precision
-  // 8 bytes of zero for Root Delay & Root Dispersion
-  packetBuffer[12]  = 49;
-  packetBuffer[13]  = 0x4E;
-  packetBuffer[14]  = 49;
-  packetBuffer[15]  = 52;
-
-  //Send Data
-  int ret = sendData(LINK_ID, packetBuffer, NTP_PACKET_SIZE, ntpSrv, ntpPort);
-  if (ret) {
-     errorDisplay("sendData Fail");
-  }
-
 }
