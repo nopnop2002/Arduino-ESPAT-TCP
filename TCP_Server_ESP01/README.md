@@ -49,8 +49,12 @@ if __name__=='__main__':
         counter = counter + 1
         client.send(msg.encode(encoding='utf-8'))
 
-        response = client.recv(1024)
-        print("response={}".format(response))
+        try:
+            response = client.recv(1024)
+            print("response={}".format(response))
+        except:
+            print("recv fail")
+            continue
         client.close()
         time.sleep(2)
 ```
