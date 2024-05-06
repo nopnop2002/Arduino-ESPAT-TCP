@@ -116,8 +116,8 @@ HardwareSerial Serial1(PA10, PA9);
 #define _MODEL_         "STM32 NUCLEO64 ST Core"
 #endif
 
-#define SERVER          "192.168.10.46"        // Server IP
-#define PORT            8080                   // Server port
+#define REMOTE_HOST     "192.168.10.46"        // Remote Host
+#define REMOTE_PORT     8080                   // Remote Port
 #define INTERVAL        1000                   // Interval of Packet Send(MillSecond)
 
 // Last Packet Send Time (MilliSecond)
@@ -169,7 +169,7 @@ void setup(void)
   Serial.print(MACaddress);
   Serial.println("]");
 
-  Serial.println("Start TCP/IP Client [" + String(_MODEL_) + "] to " + String(SERVER) + "/" + String(PORT) );
+  Serial.println("Start TCP/IP Client [" + String(_MODEL_) + "] to " + String(REMOTE_HOST) + "/" + String(REMOTE_PORT) );
   lastSendPacketTime = millis();
 }
 
@@ -179,10 +179,11 @@ void loop(void) {
   char smsg[64];
   char rmsg[64];
 
-  // If there is some input, a program is ended.
+  //If there is some input, a program is ended.
   if (Serial.available() > 0) {
     char inChar = Serial.read();
     Serial.println("KeyIn");
+    //Disconnect from an AP
     sendCommand("AT+CWQAP");
     if (!waitForString("OK", 2, 1000)) {
       errorDisplay("AT+CWQAP Fail");
@@ -197,20 +198,20 @@ void loop(void) {
     lastSendPacketTime = now + INTERVAL;
     //Start connection
     //AT+CIPSTART=<type="TCP">,<remote IP>,<remote port>
-    sprintf(cmd, "AT+CIPSTART=\"TCP\",\"%s\",%u", SERVER, PORT);
+    sprintf(cmd, "AT+CIPSTART=\"TCP\",\"%s\",%u", REMOTE_HOST, REMOTE_PORT);
     sendCommand(cmd);
     if (!waitForString("OK", 2, 10000)) {
       Serial.println("Check Server IP Address and Server Port");
       Serial.print("Server IP:");
-      Serial.println(SERVER);
+      Serial.println(REMOTE_HOST);
       Serial.print("Server Port:");
-      Serial.println(PORT);
+      Serial.println(REMOTE_PORT);
       errorDisplay("AT+CIPSTART Fail");
     }
     clearBuffer();
 
-    sprintf(smsg, "data from %s %05d", _MODEL_, num);
-    int sz_smsg = strlen(smsg);
+    int sz_smsg = sprintf(smsg, "data from %s %05d", _MODEL_, num);
+    //int sz_smsg = strlen(smsg);
     Serial.write((uint8_t *)smsg, sz_smsg);
     num++;
 
@@ -227,12 +228,12 @@ void loop(void) {
       Serial.print("readLen=");
       Serial.println(readLen);
     }
-    Serial.print("---->");
-    Serial.write((uint8_t *)rmsg, readLen);
-    Serial.println();
     if (readLen < 0) {
       errorDisplay("Server not response");
     }
+    Serial.print("---->");
+    Serial.write((uint8_t *)rmsg, readLen);
+    Serial.println();
     clearBuffer();
 
     //Close TCP connection
