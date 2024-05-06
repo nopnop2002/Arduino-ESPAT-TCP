@@ -14,6 +14,9 @@ Interval of Packet Send(MillSecond)
 #!/usr/bin/python3
 # -*- coding : UTF-8 -*-
 import socket
+#!/usr/bin/python3
+# -*- coding : UTF-8 -*-
+import socket
 import signal
 import argparse
 server_ip = "0.0.0.0"
@@ -32,15 +35,15 @@ if __name__=='__main__':
     args = parser.parse_args()
     print("port={}".format(args.port))
 
-    listen_num = 5
-    socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    socket.bind((server_ip, args.port))
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind((server_ip, args.port))
 
     while True:
-        socket.listen(listen_num)
-        socket.settimeout(1.0)
+        sock.listen(5)
+        sock.settimeout(1.0)
         try:
-            client,address = socket.accept()
+            client,address = sock.accept()
             print("Connected!! [ Source : {}]".format(address))
         except:
             #print("Timeout. running={}".format(running))
