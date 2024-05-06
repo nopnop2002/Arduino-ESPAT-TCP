@@ -14,32 +14,46 @@ Interval of Packet Send(MillSecond)
 #!/usr/bin/python3
 # -*- coding : UTF-8 -*-
 import socket
+import signal
 import argparse
 server_ip = "0.0.0.0"
 
+def handler(signal, frame):
+    global running
+    print('handler')
+    running = False
+
 if __name__=='__main__':
+    signal.signal(signal.SIGINT, handler)
+    running = True
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--port', type=int, help='tcp port', default=8080)
     args = parser.parse_args()
     print("port={}".format(args.port))
 
     listen_num = 5
-    tcp_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    tcp_server.bind((server_ip, args.port))
+    socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socket.bind((server_ip, args.port))
+
     while True:
-        tcp_server.listen(listen_num)
+        socket.listen(listen_num)
+        socket.settimeout(1.0)
+        try:
+            client,address = socket.accept()
+            print("Connected!! [ Source : {}]".format(address))
+        except:
+            #print("Timeout. running={}".format(running))
+            if running is False: break
+            continue
 
-        client,address = tcp_server.accept()
-        print("Connected!! [ Source : {}]".format(address))
-
-        buffer_size = 1024
-        while True:
-            rmsg = client.recv(buffer_size)
+        while running:
+            rmsg = client.recv(1024)
             print("len(rmsg)={}".format(len(rmsg)))
             if (len(rmsg) == 0): break
             if (type(rmsg) == bytes):
                 rmsg=rmsg.decode('utf-8')
-            print("Received Data : {}".format(rmsg))
+            print("[{}]".format(rmsg),end="")
 
             smsg = ""
             for ch in rmsg:
@@ -49,7 +63,7 @@ if __name__=='__main__':
                 else:
                     smsg = smsg + ch.lower()
 
-            print("smsg={}".format(smsg))
+            print("---->[{}]".format(smsg))
             client.send(smsg.encode(encoding='utf-8'))
 
         client.close()
