@@ -7,7 +7,7 @@ You can download from [here](http://www.espressif.com/en/support/download/other-
 
 - AT-Firmware   
 You can download from [here](https://github.com/espressif/ESP8266_NONOS_SDK/tags).   
-The latest firmware may not support ESP01.   
+Some firmware version does not support ESP01.   
 So we flash version 3.0.4 and do an firmware update.   
 The latest version is 3.0.5.   
 ```
