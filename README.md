@@ -173,7 +173,7 @@ AT+CIPSTA?
 OK
 ```
 
-If you want to change the AP, run the following command again.   
+If you want to change the AP, execute the following command again.   
 ```
 AT+CWJAP="New AP's SSID","New AP's password"
 WIFI CONNECTED
