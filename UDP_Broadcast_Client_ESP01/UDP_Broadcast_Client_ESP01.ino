@@ -115,7 +115,6 @@ HardwareSerial Serial1(PA10, PA9);
 #define _MODEL_         "STM32 NUCLEO64 ST Core"
 #endif
 
-#define LINK_ID         3                      // Link ID
 #define REMOTE_HOST     "255.255.255.255"      // Remote Host
 #define REMOTE_PORT     8080                   // Remote Port
 #define INTERVAL        1000                   // Interval of Packet Send(MillSecond)
