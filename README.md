@@ -152,22 +152,33 @@ _*** Change baudrate to 4800bps ***_
 _*** Because there is no the 2nd UART in UNO ***_   
 _*** So UNO use Software Serial with low speed ***_
 
-    AT+UART_DEF=4800,8,1,0,0
+```
+AT+UART_DEF=4800,8,1,0,0
+```
 
 Re-Connect to ESP01 with 4800 bps.   
 
 AT firmware has a function that automatically connects to the last connected AP when the module is reset.   
 Using this function, you can omit the SSID and password.   
 
-    AT+RST
-    WIFI CONNECTED
-    WIFI GOT IP
-    AT+CIPSTA?
-    +CIPSTA:ip:"192.168.10.142"
-    +CIPSTA:gateway:"192.168.10.1"
-    +CIPSTA:netmask:"255.255.255.0"
-    
-    OK
+```
+AT+RST
+WIFI CONNECTED
+WIFI GOT IP
+AT+CIPSTA?
++CIPSTA:ip:"192.168.10.142"
++CIPSTA:gateway:"192.168.10.1"
++CIPSTA:netmask:"255.255.255.0"
+
+OK
+```
+
+If you want to change the AP, run the following command again.   
+```
+AT+CWJAP="New AP's SSID","New AP's password"
+WIFI CONNECTED
+WIFI GOT IP
+```
 
 ----
 
