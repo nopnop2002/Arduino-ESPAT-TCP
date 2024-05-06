@@ -8,7 +8,16 @@ You can download from [here](http://www.espressif.com/en/support/download/other-
 - AT-Firmware   
 You can download from [here](https://github.com/espressif/ESP8266_NONOS_SDK/tags).   
 The latest firmware may not support ESP01.   
-So we flash version 2.2.1 and do an firmware update.   
+So we flash version 2.2.1 or 3.0.4 and do an firmware update.   
+The latest version is 3.0.5.   
+```
+AT+GMR
+AT version:1.7.5.0(Oct 20 2021 19:14:04)
+SDK version:3.0.5(b29dcd3)
+compile time:Oct 20 2021 20:13:50
+Bin version(Wroom 02):1.7.5
+OK
+```
 
 # Goto UART Download Mode   
 Start Flash Download Tools   
