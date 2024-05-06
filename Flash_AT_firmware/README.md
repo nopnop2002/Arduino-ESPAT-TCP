@@ -23,5 +23,6 @@ Start flash.
 # Goto Flash Boot Mode   
 Open terminal software such as CoolTerm and connect to ESP8266.   
 The default baud rate is 115200bps.   
+Change the terminal software's transmission termination character to CR+LF.   
 Change GPIO2 of ESP8266 to PullUp and reset.   
 ![FLASH_DOWNLOAD_TOOLS-6](https://user-images.githubusercontent.com/6020549/233526247-7dcd8f4c-f8fd-4e48-a8f3-8a142e85cb0d.jpg)
