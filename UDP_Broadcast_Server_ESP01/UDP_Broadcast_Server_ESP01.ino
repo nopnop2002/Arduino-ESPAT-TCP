@@ -1,5 +1,5 @@
 /*
- * Simple TCP/IP Server using ESP8266 AT Instruction Set
+ * UDP Broadcast Client using ESP8266 AT Instruction Set
  *  
  * for ATmega328
  * ESP8266----------ATmega328
@@ -12,7 +12,7 @@
  * RX     ----------TX(D18)
  * 
  * for STM32 F103 MAPLE Core
- * ESP8266----------STM32
+ * ESP8266----------STM32F103
  * TX     ----------RX(PA3)
  * RX     ----------TX(PA2)
  * 
@@ -32,17 +32,17 @@
  * RX     ----------TX(PA2)
  * 
  * for STM32 F4DISC1 ST Core
- * ESP8266----------STM32
+ * ESP8266----------STM32F103
  * TX     ----------RX(PD9)
  * RX     ----------TX(PD8) 
- *   
- * for STM32 F407VE/F407VG ST Core
- * ESP8266----------STM32
+ * 
+ * for STM32 F407VE/F407VG ST Core 
+ * ESP8266----------STM32F103
  * TX     ----------RX(PA3)
- * RX     ----------TX(PA2) 
- *    
+ * RX     ----------TX(PA2)  
+ *  
  * for STM32 NUCLEO64 ST Core
- * ESP8266----------STM32
+ * ESP8266----------STM32F103
  * TX     ----------RX(PA10)
  * RX     ----------TX(PA9)
  * 
@@ -55,7 +55,7 @@
 #include <SoftwareSerial.h>
 #define SERIAL_RX       4
 #define SERIAL_TX       5
-SoftwareSerial Serial2(SERIAL_RX, SERIAL_TX); // RX, 
+SoftwareSerial Serial2(SERIAL_RX, SERIAL_TX); // RX, TX
 #define _BAUDRATE_      4800
 #define _SERIAL_        Serial2
 #define _MODEL_         "ATmega328"
@@ -115,8 +115,13 @@ HardwareSerial Serial1(PA10, PA9);
 #define _MODEL_         "STM32 NUCLEO64 ST Core"
 #endif
 
-#define LOCAL_IP        "192.168.10.21"        // My IP Address
-#define LOCAL_PORT      8080                   // Listen Port
+#define REMOTE_HOST     "255.255.255.255"      // Remote Host
+#define REMOTE_PORT     28080                  // Remote Port
+#define LOCAL_PORT      8080                   // Local Port
+#define INTERVAL        1000                   // Interval of Packet Send(MillSecond)
+
+// Last Packet Send Time (MilliSecond)
+long lastSendPacketTime;
 
 void setup(void)
 {
@@ -150,66 +155,70 @@ void setup(void)
   }
   clearBuffer();
 
-  //Set IP address of Station
-  char cmd[64];
-  sprintf(cmd, "AT+CIPSTA_CUR=\"%s\"", LOCAL_IP);
-  sendCommand(cmd);
-  if (!waitForString("OK", 2, 1000)) {
-    errorDisplay("AT+CIPSTA_CUR fail");
-  }
-  clearBuffer();
-
   //Get My IP Address
   char IPaddress[64];
   getIpAddress(IPaddress,sizeof(IPaddress),2000);
-  Serial.print("IP Address: ");
-  Serial.println(IPaddress);
+  Serial.print("IPaddress=[");
+  Serial.print(IPaddress);
+  Serial.println("]");
+  
+  //Get My MAC Address
+  char MACaddress[64];
+  getMacAddress(MACaddress,sizeof(MACaddress),2000);
+  Serial.print("MACaddress=[");
+  Serial.print(MACaddress);
+  Serial.println("]");  
 
-  //Enable multi connections
-  sendCommand("AT+CIPMUX=1");
-  if (!waitForString("OK", 2, 1000)) {
-    errorDisplay("AT+CIPMUX Fail");
-  }
-  clearBuffer();
-
-  //Configure as TCP server
-  //AT+CIPSERVER=<mode>[,<param2>][,<"type">][,<CA enable>]
-  sprintf(cmd, "AT+CIPSERVER=1,%d", LOCAL_PORT);
+  //Establish UDP Transmission (Single connection)
+  //AT+CIPSTART=<type="UDP">,<remote host>,<remote port>,<local port>,<mode=2>
+  //mode=2
+  //Each time UDP data is received, the <"remote host"> and <remote port> will be changed to the IP address and port of the device that sends the data.
+  char cmd[64];
+  sprintf(cmd,"AT+CIPSTART=\"UDP\",\"%s\",%u,%u,2", REMOTE_HOST, REMOTE_PORT, LOCAL_PORT);
   sendCommand(cmd);
   if (!waitForString("OK", 2, 1000)) {
-    errorDisplay("AT+CIPSERVER Fail");
+    errorDisplay("AT+CIPSTART Fail");
   }
   clearBuffer();
 
-  Serial.println("Start TCP Server [" + String(_MODEL_) + "] wait for " + String(LOCAL_PORT) + " Port");
+  Serial.println("Start UDP Server [" + String(_MODEL_) + "] wait for " + String(LOCAL_PORT) + " Port");
 }
 
-void(* resetFunc) (void) = 0; //declare reset function @ address 0
-
 void loop(void) {
+  static int num = 0;
   char smsg[64];
   char rmsg[64];
-  int rlen;
-  int id;
+  char stat[64];
 
-  //Wait from client connection
-  id = waitConnect(1, 10000);
-  if (_DEBUG_) {
-    Serial.print("Connect id=");
-    Serial.println(id);
+  //If there is some input, a program is ended.
+  if (Serial.available() > 0) {
+    char inChar = Serial.read();
+    Serial.println("KeyIn");
+    //Close UDP connection
+    sendCommand("AT+CIPCLOSE");
+    if (!waitForString("OK", 2, 1000)) {
+      errorDisplay("AT+CIPCLOSE Fail");
+    }
+    clearBuffer();
+    //Disconnect from an AP
+    sendCommand("AT+CWQAP");
+    if (!waitForString("OK", 2, 1000)) {
+      errorDisplay("AT+CWQAP Fail");
+    }
+    clearBuffer();
+    Serial.println("client end");
+    while (1) { }
   }
 
-  if (id < 0) {
-    Serial.println("waitConnect Fail");
-    delay(1000);
-    resetFunc(); // call reset
+  //Read packet
+  int rlen = readData(rmsg, sizeof(rmsg), 5000);
+  if (_DEBUG_) {
+    Serial.println();
+    Serial.print("rlen=");
+    Serial.println(rlen);
   }
   
-  if (id >= 0) {
-    //Receive data
-    rlen = readResponse(id, rmsg, sizeof(rmsg), 5000);
-    clearBuffer();
-
+  if (rlen > 0) {
     memset (smsg,0,sizeof(smsg));
     for (int i=0; i< rlen; i++) {
       if(isalpha(rmsg[i])) {
@@ -222,24 +231,11 @@ void loop(void) {
     Serial.print("----->");
     Serial.write((uint8_t *)smsg,rlen);
     Serial.println();
-
-    //Send response
-    int ret = sendData(id, smsg, rlen, "", 0);
-    if (ret) {
-      Serial.println("sendData Fail");
-      delay(1000);
-      resetFunc(); // call reset
-    }
     
-    //Wait from client disconnection
-    while(1) {
-      id = waitConnect(2, 10000);
-      if (_DEBUG_) {
-        Serial.print("Close id=");
-        Serial.println(id);
-      }
-      if (id >= 0) break;
+    //Send Data
+    int ret = sendData(-1, smsg, rlen, "", 0);
+    if (ret) {
+      errorDisplay("sendData Fail");
     }
-  
   }
 }

@@ -1,20 +1,22 @@
 # Environment
 You need to change the following environment.
 
-- #define LOCAL_IP        "192.168.10.21"   
-Server IP Address   
 - #define LOCAL_PORT      8080   
 Server listen Port   
 
 
-# TCP client using python
+# UDP broadcast client using python
 ```
-#!/usr/bin/python3
+#!/usr/bin/python
 #-*- encoding: utf-8 -*-
 import socket
 import signal
 import time
 import argparse
+
+
+ADDRESS = "255.255.255.255" # limited broadcast address
+#ADDRESS = "<broadcast>" # limited broadcast address
 
 def handler(signal, frame):
     global running
@@ -26,38 +28,30 @@ if __name__=='__main__':
     running = True
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--host', help='tcp host', default="192.168.10.21")
-    parser.add_argument('--port', type=int, help='tcp port', default=8080)
+    parser.add_argument('--port', type=int, help='udp port', default=8080)
     args = parser.parse_args()
-    print("host={}".format(args.host))
     print("port={}".format(args.port))
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
     counter = 0
     while running:
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-        client.settimeout(10.0)
-        try:
-            client.connect((args.host, args.port))
-            #print("connect to host")
-        except:
-            print("connect fail")
-            continue
-
         smsg = "data {} from client".format(counter)
         counter = counter + 1
-        client.send(smsg.encode(encoding='utf-8'))
+        sock.sendto(smsg.encode('utf-8'), (ADDRESS, args.port))
         print("[{}]---->".format(smsg),end="")
+        time.sleep(1)
 
-        client.settimeout(2.0)
+        sock.settimeout(2.0)
         try:
-            rmsg = client.recv(1024)
+            rmsg, cli_addr = sock.recvfrom(1024)
             if (type(rmsg) == bytes):
                 rmsg=rmsg.decode('utf-8')
             print("[{}]".format(rmsg))
         except:
             print("receive timeout")
+            continue
 
-        client.close()
-        time.sleep(2)
+    sock.close()
 ```
