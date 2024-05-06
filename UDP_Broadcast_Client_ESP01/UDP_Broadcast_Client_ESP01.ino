@@ -187,10 +187,17 @@ void loop(void) {
   char smsg[64];
   char rmsg[64];
 
-  // If there is some input, a program is ended.
+  //If there is some input, a program is ended.
   if (Serial.available() > 0) {
     char inChar = Serial.read();
     Serial.println("KeyIn");
+    //Close UDP connection
+    sendCommand("AT+CIPCLOSE");
+    if (!waitForString("OK", 2, 1000)) {
+      errorDisplay("AT+CIPCLOSE Fail");
+    }
+    clearBuffer();
+    //Disconnect from an AP
     sendCommand("AT+CWQAP");
     if (!waitForString("OK", 2, 1000)) {
       errorDisplay("AT+CWQAP Fail");
