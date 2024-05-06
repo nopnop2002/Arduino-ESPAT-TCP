@@ -57,4 +57,6 @@ if __name__=='__main__':
         time.sleep(1)
         print("---->[{}]".format(smsg))
         sock.sendto(smsg.encode(encoding='utf-8'), cli_addr)
+
+    sock.close()
 ```
