@@ -118,10 +118,8 @@ HardwareSerial Serial1(PA10, PA9);
 
 #define INTERVAL        10                     // Interval of Packet Send(Second)
 #define NTP_SERVER      "time.google.com"      // NTP Server
-//#define NTP_SERVER      "216.239.35.4"         // NTP Server
 #define NTP_PORT        123                    // NTP Port
 #define LOCAL_PORT      2390                   // Local Port
-#define LINK_ID         3                      // Link ID
 #define NTP_PACKET_SIZE 48                     // NTP Packet Size
 #define TIME_ZONE       9                      // Time Difference from GMT
 #define DNS_SERVER1     "8.8.8.8"              // DNS SERVER1
@@ -179,17 +177,17 @@ void sendNTPpacket(char *ntpSrv, int ntpPort)
   // (see URL above for details on the packets)
 
   packetBuffer[0] = 0b11100011;   // LI, Version, Mode
-  packetBuffer[1] = 0;     // Stratum, or type of clock
-  packetBuffer[2] = 6;     // Polling Interval
-  packetBuffer[3] = 0xEC;  // Peer Clock Precision
+  packetBuffer[1] = 0;            // Stratum, or type of clock
+  packetBuffer[2] = 6;            // Polling Interval
+  packetBuffer[3] = 0xEC;         // Peer Clock Precision
   // 8 bytes of zero for Root Delay & Root Dispersion
-  packetBuffer[12]  = 49;
-  packetBuffer[13]  = 0x4E;
-  packetBuffer[14]  = 49;
-  packetBuffer[15]  = 52;
+  packetBuffer[12] = 49;
+  packetBuffer[13] = 0x4E;
+  packetBuffer[14] = 49;
+  packetBuffer[15] = 52;
 
   //Send Data
-  int ret = sendData(LINK_ID, packetBuffer, NTP_PACKET_SIZE, ntpSrv, ntpPort);
+  int ret = sendData(-1, packetBuffer, NTP_PACKET_SIZE, ntpSrv, ntpPort);
   if (ret) {
      errorDisplay("sendData Fail");
   }
@@ -265,23 +263,15 @@ void setup(void)
   }
   clearBuffer();
 
-  //Enable multi connections
-  sendCommand("AT+CIPMUX=1");
-  if (!waitForString("OK", 2, 1000)) {
-    errorDisplay("AT+CIPMUX Fail");
-  }
-  clearBuffer();
-
   //Establish UDP Transmission
-  //AT+CIPSTART=<link ID>,<type="UDP">,<remoteIP="0">,<remote port=0>,<UDP local port>,<UDP mode=2>
-  sprintf(cmd,"AT+CIPSTART=%d,\"UDP\",\"0\",0,%u,2", LINK_ID, LOCAL_PORT);
-  //sendCommand("AT+CIPSTART=3,\"UDP\",\"0\",0,2390,2");
+  //AT+CIPSTART=<type="UDP">,<remoteIP="0">,<remote port=0>,<UDP local port>,<UDP mode=2>
+  sprintf(cmd,"AT+CIPSTART=\"UDP\",\"0\",0,%u,2", LOCAL_PORT);
+  //sendCommand("AT+CIPSTART=\"UDP\",\"0\",0,2390,2");
   sendCommand(cmd);
   if (!waitForString("OK", 2, 1000)) {
     errorDisplay("AT+CIPSTART Fail");
   }
   clearBuffer();
-
   Serial.println("Start NTP Client [" + String(_MODEL_) + "] using " + String(NTP_SERVER));
 
   // send an NTP packet to a time server
@@ -311,7 +301,7 @@ void loop(void) {
   }
 
   // Read data from NTP server
-  int readLen = readResponse(LINK_ID, packetBuffer, NTP_PACKET_SIZE, 1000);
+  int readLen = readResponse(-1, packetBuffer, NTP_PACKET_SIZE, 1000);
   //Serial.print("packet received, length=");
   //Serial.println(readLen);
   if (readLen == NTP_PACKET_SIZE) {
