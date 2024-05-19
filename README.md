@@ -33,6 +33,8 @@ Global variables use 897 bytes (43%) of dynamic memory, leaving 1151 bytes for l
 
 - ATmega328/ATmega2560/STM32
 
+- UART-USB converter
+
 # Software requirements   
 - Arduino Environment   
  Core library is required when using STM32.   
