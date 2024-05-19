@@ -43,6 +43,10 @@ Global variables use 897 bytes (43%) of dynamic memory, leaving 1151 bytes for l
  You can download from [here](https://github.com/espressif/ESP8266_NONOS_SDK/tags).   
  Some versions do not support 1M SoCs like ESP01.   
 
+- Terminal software such as CoolTerm   
+ I use TeraTrem.   
+ You can down load from [here](https://download.cnet.com/tera-term/3000-2094_4-75766675.html).
+
 # Applications   
 
 **MQTT_Publish_ESP01**   
