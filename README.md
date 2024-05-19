@@ -35,8 +35,7 @@ Global variables use 897 bytes (43%) of dynamic memory, leaving 1151 bytes for l
 
 # Software requirements   
 - Arduino Environment   
-
-- Core library is required when using STM32.   
+ Core library is required when using STM32.   
  It supports Maple cores and ST cores.   
 
 - ESP8266 AT Firmware   
