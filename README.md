@@ -41,8 +41,21 @@ Global variables use 897 bytes (43%) of dynamic memory, leaving 1151 bytes for l
  It supports Maple cores and ST cores.   
 
 - ESP8266 AT Firmware   
- You can download from [here](https://github.com/espressif/ESP8266_NONOS_SDK/tags).   
+ AT firmware version can be identified by AT version and SDK version.   
+ AT version V2 added MQTT and HTTP commands.   
+ However, AT version V2 does not support 1M SoCs like ESP01.   
+ When using 1M SoCs like ESP01, it is necessary to use AT version V1.   
+ This repository works with both V1 and V2.   
+ You can download AT version V1 from [here](https://github.com/espressif/ESP8266_NONOS_SDK/tags).   
  Some versions do not support 1M SoCs like ESP01.   
+ I used this.
+```
+AT+GMR
+AT version:1.7.5.0(Oct 20 2021 19:14:04)
+SDK version:3.0.5(b29dcd3)
+compile time:Oct 20 2021 20:13:50
+Bin version(Wroom 02):1.7.5
+```
 
 - Terminal software such as CoolTerm   
  I use TeraTrem.   
@@ -100,9 +113,6 @@ Power is supplied using 5V from the UART-USB converter and 3.3V from the regulat
 See [here](https://github.com/nopnop2002/Arduino-ESPAT-TCP/tree/master/Flash_AT_firmware) for details..   
 
 ![esp01-flash](https://user-images.githubusercontent.com/6020549/33159146-b8456238-d053-11e7-8202-a86cca2f8a3d.jpg)
-
-
----
 
 # Setup ESP01 using terminal software such as CoolTerm.   
 - GPIO2 must be pulled up.   
@@ -185,127 +195,6 @@ WIFI CONNECTED
 WIFI GOT IP
 ```
 
-----
-
-# Connect ESP01 to UNO.
-
-ESP01(Tx) - UNO(D4)   
-ESP01(Rx) - UNO(D5)   
-
-![ESP01-MQTT-UNO](https://user-images.githubusercontent.com/6020549/55268764-656f9f00-52d0-11e9-9120-360e397ffae0.jpg)
-
-You can't use on-board 3.3V.    
-An electric current is insufficient.   
-
-----
-
-# Connect ESP01 to MEGA2560.
-
-ESP01(Tx) - MEGA(D19)   
-ESP01(Rx) - MEGA(D18)   
-
-![ESP01-MQTT-MEGA](https://user-images.githubusercontent.com/6020549/55268794-9fd93c00-52d0-11e9-8cca-4f4bd202d745.jpg)
-
-You can't use on-board 3.3V.    
-An electric current is insufficient.   
-
-----
-
-# Connect ESP01 to STM32F103(MAPLE Core).
-
-ESP01(Tx) - STM32F103(PA3)   
-ESP01(Rx) - STM32F103(PA2)   
-
-![ESP01-MQTT-STM32F103_MAPLE-Core](https://user-images.githubusercontent.com/6020549/55272404-869bb400-52ff-11e9-97aa-1ff31090f925.jpg)
-
-MAPLE Core.    
-https://github.com/rogerclarkmelbourne/Arduino_STM32   
-
-----
-
-# Connect ESP01 to STM32 NUCLEO(ST Core).
-
-ESP01(Tx) - STM32F103(PA10)   
-ESP01(Rx) - STM32F103(PA9)   
-
-![ESP01-MQTT-STM32F103_ST-Core](https://user-images.githubusercontent.com/6020549/55272409-94e9d000-52ff-11e9-9f4b-61386ed3e656.jpg)
-
-ST Core.    
-https://github.com/stm32duino/Arduino_Core_STM32   
-
-----
-
-# Connect ESP01 to STM32 F103 BluePill(ST Core).
-
-ESP01(Tx) - STM32F103(PA3)   
-ESP01(Rx) - STM32F103(PA2)   
-
-![ESP01-MQTT-BLUEPILL_STM32F103_ST-Core](https://user-images.githubusercontent.com/6020549/62212468-c1ac1200-b3db-11e9-9fa2-9460d29b46cb.jpg)
-
-Serial printing goes to PA9.   
-
-----
-
-# Connect ESP01 to STM32 F103 MapleMini(ST Core).
-
-ESP01(Tx) - STM32F103(PA3)   
-ESP01(Rx) - STM32F103(PA2)   
-
-![ESP01-MQTT-MAPLEMINI_STM32F103_ST-Core](https://user-images.githubusercontent.com/6020549/62213727-88c16c80-b3de-11e9-9f10-54a274908c4c.jpg)
-
-Serial printing goes to PA9.   
-
-----
-
-# STM32F103 development board on which ESP01 can be mounted(ST Core).
-
-ESP01(Tx) - STM32F103(PA3)   
-ESP01(Rx) - STM32F103(PA2)   
-
-![ESP01-STM32](https://user-images.githubusercontent.com/6020549/103254648-7c718280-49c9-11eb-9bd0-c89cb686335e.JPG)
-
-Serial printing goes to PA9.   
-
-----
-
-# Connect ESP01 to STM32 F303 BlackPill(ST Core).
-
-ESP01(Tx) - STM32F303(PA3)   
-ESP01(Rx) - STM32F303(PA2)   
-
-Serial printing goes to PA9.   
-
-----
-
-# Connect ESP01 to STM32 F401 BlackPill(ST Core).
-
-ESP01(Tx) - STM32F401(PA3)   
-ESP01(Rx) - STM32F401(PA2)   
-
-Serial printing goes to PA9.   
-
-----
-
-# Connect ESP01 to STM32 F4DISC1(ST Core).
-
-ESP01(Tx) - STM32F4DISC1(PD9)   
-ESP01(Rx) - STM32F4DISC1(PD8)   
-
-I want to Fritzing Part of this board.   
-Serial printing goes to PA2.   
-
-----
-
-# Connect ESP01 to STM32 F407 development board that like DIYMORE F407VGT.
-
-ESP01(Tx) - STM32F407(PA3)   
-ESP01(Rx) - STM32F407(PA2)   
-
-https://stm32-base.org/boards/STM32F407VGT6-diymore   
-Serial printing goes to PA9.   
-
-----
-
 # How to Firmware Upate
 
 1.Make sure TE(terminal equipment) is in sta mode   
@@ -346,23 +235,116 @@ Bin version(Wroom 02):1.7.5
 OK
 ```
 
-----
+# Connect ESP01 to UNO.
+
+ESP01(Tx) - UNO(D4)   
+ESP01(Rx) - UNO(D5)   
+
+![ESP01-MQTT-UNO](https://user-images.githubusercontent.com/6020549/55268764-656f9f00-52d0-11e9-9120-360e397ffae0.jpg)
+
+You can't use on-board 3.3V.    
+An electric current is insufficient.   
+
+# Connect ESP01 to MEGA2560.
+
+ESP01(Tx) - MEGA(D19)   
+ESP01(Rx) - MEGA(D18)   
+
+![ESP01-MQTT-MEGA](https://user-images.githubusercontent.com/6020549/55268794-9fd93c00-52d0-11e9-8cca-4f4bd202d745.jpg)
+
+You can't use on-board 3.3V.    
+An electric current is insufficient.   
+
+# Connect ESP01 to STM32F103(MAPLE Core).
+
+ESP01(Tx) - STM32F103(PA3)   
+ESP01(Rx) - STM32F103(PA2)   
+
+![ESP01-MQTT-STM32F103_MAPLE-Core](https://user-images.githubusercontent.com/6020549/55272404-869bb400-52ff-11e9-97aa-1ff31090f925.jpg)
+
+MAPLE Core.    
+https://github.com/rogerclarkmelbourne/Arduino_STM32   
+
+# Connect ESP01 to STM32 NUCLEO(ST Core).
+
+ESP01(Tx) - STM32F103(PA10)   
+ESP01(Rx) - STM32F103(PA9)   
+
+![ESP01-MQTT-STM32F103_ST-Core](https://user-images.githubusercontent.com/6020549/55272409-94e9d000-52ff-11e9-9f4b-61386ed3e656.jpg)
+
+ST Core.    
+https://github.com/stm32duino/Arduino_Core_STM32   
+
+# Connect ESP01 to STM32 F103 BluePill(ST Core).
+
+ESP01(Tx) - STM32F103(PA3)   
+ESP01(Rx) - STM32F103(PA2)   
+
+![ESP01-MQTT-BLUEPILL_STM32F103_ST-Core](https://user-images.githubusercontent.com/6020549/62212468-c1ac1200-b3db-11e9-9fa2-9460d29b46cb.jpg)
+
+Serial printing goes to PA9.   
+
+# Connect ESP01 to STM32 F103 MapleMini(ST Core).
+
+ESP01(Tx) - STM32F103(PA3)   
+ESP01(Rx) - STM32F103(PA2)   
+
+![ESP01-MQTT-MAPLEMINI_STM32F103_ST-Core](https://user-images.githubusercontent.com/6020549/62213727-88c16c80-b3de-11e9-9f10-54a274908c4c.jpg)
+
+Serial printing goes to PA9.   
+
+# STM32F103 development board on which ESP01 can be mounted(ST Core).
+
+ESP01(Tx) - STM32F103(PA3)   
+ESP01(Rx) - STM32F103(PA2)   
+
+![ESP01-STM32](https://user-images.githubusercontent.com/6020549/103254648-7c718280-49c9-11eb-9bd0-c89cb686335e.JPG)
+
+Serial printing goes to PA9.   
+
+# Connect ESP01 to STM32 F303 BlackPill(ST Core).
+
+ESP01(Tx) - STM32F303(PA3)   
+ESP01(Rx) - STM32F303(PA2)   
+
+Serial printing goes to PA9.   
+
+# Connect ESP01 to STM32 F401 BlackPill(ST Core).
+
+ESP01(Tx) - STM32F401(PA3)   
+ESP01(Rx) - STM32F401(PA2)   
+
+Serial printing goes to PA9.   
+
+# Connect ESP01 to STM32 F4DISC1(ST Core).
+
+ESP01(Tx) - STM32F4DISC1(PD9)   
+ESP01(Rx) - STM32F4DISC1(PD8)   
+
+I want to Fritzing Part of this board.   
+Serial printing goes to PA2.   
+
+# Connect ESP01 to STM32 F407 development board that like DIYMORE F407VGT.
+
+ESP01(Tx) - STM32F407(PA3)   
+ESP01(Rx) - STM32F407(PA2)   
+
+https://stm32-base.org/boards/STM32F407VGT6-diymore   
+Serial printing goes to PA9.   
 
 # UART to WiFi module   
 We can get a module for UART communication.   
 We can write AT firmware to this.   
+Although it supplies 5V power, the TTL level of UART is 3.3V.   
 ![ESP-UART-MODULE-1](https://user-images.githubusercontent.com/6020549/104827197-b504cd80-589e-11eb-95a8-f12c75670ced.JPG)
 
 ![ESP-UART-MODULE-2](https://user-images.githubusercontent.com/6020549/104827200-b8985480-589e-11eb-9a01-e70d4fbd55cc.JPG)
 
-----
-
 # ESP01 Adapter board
 Only $1 for aliexpress/eBay.   
 It has a 5V->3.3V regulator and can supply power directly from UNO's 5V.   
+Although it supplies 5V power, the TTL level of UART is 3.3V.   
 ![ESP01-Adapter-3](https://user-images.githubusercontent.com/6020549/120063987-f3a86100-c0a4-11eb-95e4-c87164812af4.JPG)
-
-----
 
 # Use with TFT Shield   
 UNO compatibles can have a pin header inside the pin socket.   
