@@ -342,7 +342,7 @@ Although it supplies 5V power, the TTL level of UART is 3.3V.
 ![ESP-UART-MODULE-2](https://user-images.githubusercontent.com/6020549/104827200-b8985480-589e-11eb-9a01-e70d4fbd55cc.JPG)
 
 # ESP01 Adapter board
-Only $1 for aliexpress/eBay.   
+Only $1 for AliExpress/eBay.   
 External pin header is 5V,GND,TXD,RXD.   
 It has a 5V->3.3V regulator and can supply power directly from UNO's 5V.   
 Although it supplies 5V power, the TTL level of UART is 3.3V.   
