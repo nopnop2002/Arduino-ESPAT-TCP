@@ -30,6 +30,7 @@ Global variables use 897 bytes (43%) of dynamic memory, leaving 1151 bytes for l
 
 # Hardware requirements   
 - ESP8266 module like ESP01   
+ ESP8266 has 1MB FLASH and 4MB FLASH (or more) SoCs, but it doesn't matter.
 
 - ATmega328/ATmega2560/STM32
 
