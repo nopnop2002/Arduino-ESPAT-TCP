@@ -47,7 +47,8 @@ Global variables use 897 bytes (43%) of dynamic memory, leaving 1151 bytes for l
  When using 1M SoCs like ESP01, it is necessary to use AT version V1.   
  This repository works with both V1 and V2.   
  You can download AT version V1 from [here](https://github.com/espressif/ESP8266_NONOS_SDK/tags).   
- Some versions do not support 1M SoCs like ESP01.   
+ __Note__   
+ Some firmware here does not support 1M SoC such as ESP01.   
  I used this.
 ```
 AT+GMR
