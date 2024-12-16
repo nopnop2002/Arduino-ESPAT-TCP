@@ -1,5 +1,5 @@
 # Arduino-ESPAT-TCP   
-TCP/UDP Applicaton for Arduino using ESP8266's AT firmware.   
+MQTT/NTP/SMTP/SNTP/TCP/UDP Applicaton for Arduino using ESP8266's AT firmware.   
 You don't need Ethernet card.   
 You need only ESP8266 module.   
 
