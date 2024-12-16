@@ -9,13 +9,13 @@ You can download from [here](http://www.espressif.com/en/support/download/other-
 You can download from [here](https://github.com/espressif/ESP8266_NONOS_SDK/tags).   
 Some firmware version does not support ESP01.   
 So we flash version 3.0.4 and do an firmware update.   
-The latest version is 3.0.5.   
+The latest version is 3.0.6.   
 ```
 AT+GMR
-AT version:1.7.5.0(Oct 20 2021 19:14:04)
-SDK version:3.0.5(b29dcd3)
-compile time:Oct 20 2021 20:13:50
-Bin version(Wroom 02):1.7.5
+AT version:1.7.6.0(Jan 24 2022 08:56:02)
+SDK version:3.0.6-dev(072755c)
+compile time:Jun 17 2024 07:37:49
+Bin version(Wroom 02):1.7.6
 OK
 ```
 
